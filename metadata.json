@@ -1,0 +1,9 @@
+{
+  "name": "Auto Day/Night Theme Switch",
+  "description": "Automatically switch theme depending on the time of the day",
+  "uuid": "adnts@n.darazaki.gmail.com",
+  "version": 1,
+  "shell-version": [
+    "3.34", "3.32", "3.30"
+  ]
+}

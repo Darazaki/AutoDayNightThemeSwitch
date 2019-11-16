@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="dnd@catbo.net">
+  <schema id="org.gnome.shell.extensions.adnts@n.darazaki.gmail.com" path="/org/gnome/shell/extensions/adnts@n.darazaki.gmail.com/">
+    <key type="u" name="time-check-period">
+      <default>20</default>
+      <summary>Period at which the time of the day is checked</summary>
+    </key>
+    <key type="s" name="day-theme">
+      <default>'Adwaita'</default>
+      <summary>Day theme's name</summary>
+    </key>
+    <key type="s" name="night-theme">
+      <default>'Adwaita-dark'</default>
+      <summary>Night theme's name</summary>
+    </key>
+    <key type="u" name="nighttime-begin">
+      <!-- 20:00 / 8 pm -->
+      <default>1200</default>
+      <summary>Time at which the theme should begin being the night theme (in minutes)</summary>
+    </key>
+    <key type="u" name="nighttime-end">
+      <!-- 8:00 / 8 am -->
+      <default>480</default>
+      <summary>Time at which the theme should stop being the night theme (in minutes)</summary>
+    </key>
+  </schema>
+</schemalist>
