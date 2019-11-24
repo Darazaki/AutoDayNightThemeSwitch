@@ -121,12 +121,12 @@ function buildPrefsWidget() {
 
     let spinNighttimeBegin = new Gtk.SpinButton({
         climb_rate: 60.0,
-        value: settings.get_uint('night-time-begin'),
+        value: settings.get_uint('nighttime-begin'),
         visible: true,
         hexpand: true,
     });
     settings.bind(
-        'night-time-begin',
+        'nighttime-begin',
         spinNighttimeBegin,
         'value',
         Gio.SettingsBindFlags.DEFAULT,
@@ -143,12 +143,12 @@ function buildPrefsWidget() {
 
     let spinNighttimeEnd = new Gtk.SpinButton({
         climb_rate: 60.0,
-        value: settings.get_uint('night-time-end'),
+        value: settings.get_uint('nighttime-end'),
         visible: true,
         hexpand: true,
     });
     settings.bind(
-        'night-time-end',
+        'nighttime-end',
         spinNighttimeEnd,
         'value',
         Gio.SettingsBindFlags.DEFAULT,
