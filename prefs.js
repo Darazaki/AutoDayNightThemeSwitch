@@ -151,17 +151,11 @@ function buildPrefsWidget() {
         Gio.SettingsBindFlags.DEFAULT,
     );
 
-    // RESET THEMES
+    // SEPARATOR
 
-    let buttonResetThemes = new Gtk.Button({
-        label: 'Reset Themes',
+    prefWidget.attach(new Gtk.HSeparator({
         visible: true,
-        hexpand: true,
-    });
-    prefWidget.attach(buttonResetThemes, 0, 3, 4, 1);
-    buttonResetThemes.connect('clicked', function() {
-        // reset themes
-    });
+    }), 0, 3, 4, 1);
 
     // NIGHTTIME HEADER
 
@@ -189,19 +183,7 @@ function buildPrefsWidget() {
     let nighttimeRowEndLength = nighttimeRowEnd.length;
     for (let i = 0; i < nighttimeRowEndLength; ++i) {
         prefWidget.attach(nighttimeRowEnd[i], i, 6, 1, 1);
-    } 
-
-    // RESET NIGHTTIME
-
-    let buttonResetNighttime = new Gtk.Button({
-        label: 'Reset Nighttime',
-        visible: true,
-        hexpand: true,
-    });
-    prefWidget.attach(buttonResetNighttime, 0, 7, 4, 1);
-    buttonResetNighttime.connect('clicked', function() {
-        // reset nighttime
-    });
+    }
 
 
     return prefWidget;
