@@ -13,6 +13,43 @@ const Me = ExtensionUtils.getCurrentExtension();
 function init() { }
 
 
+/**
+ * Build an array of widgets for an entry row in the nighttime section
+ * 
+ * @param {string} title The row's title, it will be shown as a label
+ * @param {string} settingsId The identifier used to identify the edited value
+ * @param {Gio.Settings} settings The extension's settings
+ *
+ * @returns {Array<Gtk.Widget>} The array containing all the row's widgets
+ */
+function buildNighttimeRow(title, settingsId, settings) {
+    // Title label
+    
+    let labelNighttime = new Gtk.Label({
+        label: title,
+        visible: true,
+    });
+    
+    // Spin entry
+    
+    let spinNighttime = new Gtk.SpinButton({
+        visible: true,
+        hexpand: true,
+    });
+    spinNighttime.set_range(0, 1439 /* minutes, 23h59 */ );
+    spinNighttime.set_increments(60 /* minutes, 1h */, 0);
+    spinNighttime.set_value(settings.get_uint(settingsId));
+    spinNighttime.connect(
+        'value-changed',
+        (spinWidget) => {
+            settings.set_uint(settingsId, spinWidget.get_value());
+        },
+    );
+
+    return [labelNighttime, spinNighttime];
+}
+
+
 /** Create the widget and bind its children to the actual values
  *
  *  @returns {Gtk.Grid} The grid containing all the widgets
@@ -113,49 +150,21 @@ function buildPrefsWidget() {
 
     // NIGHTTIME BEGIN
 
-    let labelNighttimeBegin = new Gtk.Label({
-        label: 'Start of Nighttime',
-        visible: true,
-    });
-    prefWidget.attach(labelNighttimeBegin, 0, 5, 1, 1);
-
-    let spinNighttimeBegin = new Gtk.SpinButton({
-        visible: true,
-        hexpand: true,
-    });
-    spinNighttimeBegin.set_range(0, 1439);
-    spinNighttimeBegin.set_increments(60, 0);
-    spinNighttimeBegin.set_value(settings.get_uint('nighttime-begin'));
-    spinNighttimeBegin.connect(
-        'value-changed',
-        (spinWidget) => {
-            settings.set_uint('nighttime-begin', spinWidget.get_value());
-        },
-    );
-    prefWidget.attach(spinNighttimeBegin, 1, 5, 1, 1);
+    let nighttimeRowBegin = buildNighttimeRow(
+        'Start of Nighttime', 'nighttime-begin', settings);
+    let nighttimeRowBeginLength = nighttimeRowBegin.length;
+    for (let i = 0; i < nighttimeRowBeginLength; ++i) {
+        prefWidget.attach(nighttimeRowBegin[i], i, 5, 1, 1);
+    }
 
     // NIGHTTIME END
 
-    let labelNighttimeEnd = new Gtk.Label({
-        label: 'End of Nighttime',
-        visible: true,
-    });
-    prefWidget.attach(labelNighttimeEnd, 0, 6, 1, 1);
-
-    let spinNighttimeEnd = new Gtk.SpinButton({
-        visible: true,
-        hexpand: true,
-    });
-    spinNighttimeEnd.set_range(0, 1439);
-    spinNighttimeEnd.set_increments(60, 0);
-    spinNighttimeEnd.set_value(settings.get_uint('nighttime-end'));
-    spinNighttimeEnd.connect(
-        'value-changed',
-        (spinWidget) => {
-            settings.set_uint('nighttime-end', spinWidget.get_value());
-        },
-    );
-    prefWidget.attach(spinNighttimeEnd, 1, 6, 1, 1);
+    let nighttimeRowEnd = buildNighttimeRow(
+        'End of Nighttime', 'nighttime-end', settings);
+    let nighttimeRowEndLength = nighttimeRowEnd.length;
+    for (let i = 0; i < nighttimeRowEndLength; ++i) {
+        prefWidget.attach(nighttimeRowEnd[i], i, 6, 1, 1);
+    } 
 
     // RESET NIGHTTIME
 
