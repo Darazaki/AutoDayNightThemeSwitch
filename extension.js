@@ -68,7 +68,7 @@ function setupSettings() {
     // Get the settings
     settings = new Gio.Settings({
         settings_schema: schema.lookup(
-            'org.gnome.shell.extensions.adnts@n.darazaki.gmail.com', true)
+            'org.gnome.shell.extensions.adnts@n.darazaki', true)
     });
 
     // Read settings
