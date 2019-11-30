@@ -25,28 +25,53 @@ function init() { }
 function buildNighttimeRow(title, settingsId, settings) {
     // Title label
     
-    let labelNighttime = new Gtk.Label({
+    let labelTitle = new Gtk.Label({
         label: title,
         visible: true,
     });
     
-    // Spin entry
-    
-    let spinNighttime = new Gtk.SpinButton({
+    // Spin entries
+
+    let spinHours = new Gtk.SpinButton({
         visible: true,
         hexpand: true,
     });
-    spinNighttime.set_range(0, 1439 /* minutes, 23h59 */ );
-    spinNighttime.set_increments(60 /* minutes, 1h */, 0);
-    spinNighttime.set_value(settings.get_uint(settingsId));
-    spinNighttime.connect(
+
+    let spinMinutes = new Gtk.SpinButton({
+        visible: true,
+        hexpand: true,
+    });
+
+    let initialValue = settings.get_uint(settingsId);
+
+    spinHours.set_range(0, 23 /* hours */ );
+    spinHours.set_increments(1 /* hours */, 0);
+    spinHours.set_value(Math.floor(initialValue / 60));
+    spinHours.connect(
         'value-changed',
-        (spinWidget) => {
-            settings.set_uint(settingsId, spinWidget.get_value());
+        (spinHours) => {
+            settings.set_uint(settingsId,
+                spinHours.get_value() * 60 + spinMinutes.get_value());
         },
     );
 
-    return [labelNighttime, spinNighttime];
+    spinMinutes.set_range(0, 59 /* minutes */ );
+    spinMinutes.set_increments(15 /* minutes */, 0);
+    spinMinutes.set_value(initialValue % 60);
+    spinMinutes.connect(
+        'value-changed',
+        (spinMinutes) => {
+            settings.set_uint(settingsId,
+                spinHours.get_value() * 60 + spinMinutes.get_value());
+        },
+    );
+
+    let labelSeparator = new Gtk.Label({
+        label: 'h',
+        visible: true,
+    });
+
+    return [labelTitle, spinHours, labelSeparator, spinMinutes];
 }
 
 
@@ -82,7 +107,7 @@ function buildPrefsWidget() {
         use_markup: true,
         visible: true,
     });
-    prefWidget.attach(titleThemes, 0, 0, 2, 1);
+    prefWidget.attach(titleThemes, 0, 0, 4, 1);
 
     // THEME DAY
 
@@ -97,7 +122,7 @@ function buildPrefsWidget() {
         visible: true,
         hexpand: true,
     });
-    prefWidget.attach(entryThemeDay, 1, 1, 1, 1);
+    prefWidget.attach(entryThemeDay, 1, 1, 3, 1);
     settings.bind(
         'day-theme',
         entryThemeDay,
@@ -118,7 +143,7 @@ function buildPrefsWidget() {
         visible: true,
         hexpand: true,
     });
-    prefWidget.attach(entryThemeNight, 1, 2, 1, 1);
+    prefWidget.attach(entryThemeNight, 1, 2, 3, 1);
     settings.bind(
         'night-theme',
         entryThemeNight,
@@ -133,7 +158,7 @@ function buildPrefsWidget() {
         visible: true,
         hexpand: true,
     });
-    prefWidget.attach(buttonResetThemes, 0, 3, 2, 1);
+    prefWidget.attach(buttonResetThemes, 0, 3, 4, 1);
     buttonResetThemes.connect('clicked', function() {
         // reset themes
     });
@@ -141,12 +166,12 @@ function buildPrefsWidget() {
     // NIGHTTIME HEADER
 
     let titleNighttime = new Gtk.Label({
-        label: '<b>Nighttime (expressed in minutes since midnight)</b>',
+        label: '<b>Nighttime (24h format)</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true,
     });
-    prefWidget.attach(titleNighttime, 0, 4, 2, 1);
+    prefWidget.attach(titleNighttime, 0, 4, 4, 1);
 
     // NIGHTTIME BEGIN
 
@@ -173,7 +198,7 @@ function buildPrefsWidget() {
         visible: true,
         hexpand: true,
     });
-    prefWidget.attach(buttonResetNighttime, 0, 7, 2, 1);
+    prefWidget.attach(buttonResetNighttime, 0, 7, 4, 1);
     buttonResetNighttime.connect('clicked', function() {
         // reset nighttime
     });
