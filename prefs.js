@@ -23,14 +23,14 @@ function init() { }
  * @returns {Array<Gtk.Widget>} The array containing all the row's widgets
  */
 function buildNighttimeRow(title, settingsId, settings) {
-    // Title label
+    // ROW TITLE
     
     let labelTitle = new Gtk.Label({
         label: title,
         visible: true,
     });
     
-    // Spin entries
+    // ENTRIES
 
     let spinHours = new Gtk.SpinButton({
         visible: true,
@@ -44,7 +44,7 @@ function buildNighttimeRow(title, settingsId, settings) {
 
     let initialValue = settings.get_uint(settingsId);
 
-    spinHours.set_range(0, 23 /* hours */ );
+    spinHours.set_range(0, 23 /* hours */);
     spinHours.set_increments(1 /* hours */, 0);
     spinHours.set_value(Math.floor(initialValue / 60));
     spinHours.connect(
@@ -55,7 +55,7 @@ function buildNighttimeRow(title, settingsId, settings) {
         },
     );
 
-    spinMinutes.set_range(0, 59 /* minutes */ );
+    spinMinutes.set_range(0, 59 /* minutes */);
     spinMinutes.set_increments(15 /* minutes */, 0);
     spinMinutes.set_value(initialValue % 60);
     spinMinutes.connect(
@@ -66,10 +66,13 @@ function buildNighttimeRow(title, settingsId, settings) {
         },
     );
 
+    // HOURS/MINUTES SEPARATOR
+
     let labelSeparator = new Gtk.Label({
         label: 'h',
         visible: true,
     });
+    
 
     return [labelTitle, spinHours, labelSeparator, spinMinutes];
 }

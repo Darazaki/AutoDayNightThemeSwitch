@@ -179,6 +179,7 @@ function setDayThemeIfNeeded() {
 
 /**
  * Check if it is day or night time and set the theme accordingly if needed
+ * 
  * @returns {boolean} true (which means repeat the loop indefinitely)
  */
 function timeCheck() {
