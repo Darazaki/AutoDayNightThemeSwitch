@@ -188,6 +188,47 @@ function buildPrefsWidget() {
         prefWidget.attach(nighttimeRowEnd[i], i, 6, 1, 1);
     }
 
+    // SEPARATOR
+
+    prefWidget.attach(new Gtk.HSeparator({
+        visible: true,
+    }), 0, 7, 4, 1);
+
+    // ADVANCED HEADER
+
+    let titleAdvanced = new Gtk.Label({
+        label: '<b>Advanced</b>',
+        halign: Gtk.Align.START,
+        use_markup: true,
+        visible: true,
+    });
+    prefWidget.attach(titleAdvanced, 0, 8, 4, 1);
+
+    // TIME CHECK PERIOD
+
+    let labelCheckPeriod = new Gtk.Label({
+        label: 'Time Check Period (in ms)',
+        visible: true,
+    });
+    prefWidget.attach(labelCheckPeriod, 0, 9, 1, 1);
+
+    let spinCheckPeriod = new Gtk.SpinButton({
+        visible: true,
+        hexpand: true,
+    });
+    // Range = [10ms, 30min]
+    spinCheckPeriod.set_range(10 /* ms */, 1800000 /* ms */);
+    spinCheckPeriod.set_increments(10 /* ms */, 0);
+    spinCheckPeriod.set_value(settings.get_uint('time-check-period'));
+    spinCheckPeriod.connect(
+        'value-changed',
+        (spinCheckPeriod) => {
+            settings.set_uint('time-check-period',
+                spinCheckPeriod.get_value());
+        },
+    );
+    prefWidget.attach(spinCheckPeriod, 1, 9, 3, 1);
+
 
     return prefWidget;
 }
