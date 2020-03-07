@@ -188,8 +188,8 @@ function timeCheck() {
     let minutesInDay = now.getHours() * 60 + now.getMinutes();
     
     if (nighttime.begin < nighttime.end) {
-        //   day    night    day
-        // +++++++---------+++++++
+        //   day (end)    night    day (begin)
+        // +++++++++++++---------+++++++++++++++
 
         if (nighttime.begin <= minutesInDay && minutesInDay < nighttime.end) {
             // Night
@@ -226,7 +226,7 @@ function enable() {
 
     // Run now
     timeCheck();
-    // Run every 20s starting from now
+    // Run every `timeCheckPeriod` starting from now
     timeCheckId = MainLoop.timeout_add(timeCheckPeriod, timeCheck, null);
 }
 

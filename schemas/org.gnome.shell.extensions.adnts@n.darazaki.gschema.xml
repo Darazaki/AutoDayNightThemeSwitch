@@ -2,8 +2,8 @@
 <schemalist gettext-domain="dnd@catbo.net">
   <schema id="org.gnome.shell.extensions.adnts@n.darazaki" path="/org/gnome/shell/extensions/adnts@n.darazaki/">
     <key type="u" name="time-check-period">
-      <default>20</default>
-      <summary>Period at which the time of the day is checked</summary>
+      <default>2000</default>
+      <summary>Period at which the time of the day is checked (in ms)</summary>
     </key>
     <key type="s" name="day-theme">
       <default>'Adwaita'</default>
