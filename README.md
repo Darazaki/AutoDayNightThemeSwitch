@@ -15,7 +15,7 @@ A GNOME extension to automatically switch theme depending on the time of the day
 ## Limitations
 
 - You cannot change the GTK theme the usual way anymore, use `adnts`'s preferences panel instead
-- Note: No modifications to your system are made, it's just that this extension will assume what is inside its preferences is the theme you want and it will always change it back to that
+  - Note: No modifications to your system are made, it's just that this extension will assume what is inside its preferences is the theme you want and it will always change it back to that
 - It can **only** change the GTK theme
 - It cannot run custom scripts
 - 24h format only in the preferences
