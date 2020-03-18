@@ -48,7 +48,8 @@ function buildNighttimeRow(title, settingsId, settings) {
     // actually do anything in that context (same goes with later uses)
     let initialValue = settings.get_uint(settingsId) | 0;
 
-    // The range should be (min - 1, max + 1) in order to make a looping spinner
+    // The range should be (min - step, max + step) in order to make a looping
+    // spinner
     spinHours.set_range(-1, 24 /* hours */);
     spinHours.set_increments(1 /* hours */, 0);
     spinHours.set_value(Math.floor(initialValue / 60));
@@ -75,7 +76,7 @@ function buildNighttimeRow(title, settingsId, settings) {
     );
 
     // Make it loop! (see `spinHours`'s documentation above)
-    spinMinutes.set_range(-1, 60 /* minutes */);
+    spinMinutes.set_range(-15, 74 /* minutes */);
     spinMinutes.set_increments(15 /* minutes */, 0);
     spinMinutes.set_value(initialValue % 60);
     spinMinutes.connect(
@@ -87,16 +88,17 @@ function buildNighttimeRow(title, settingsId, settings) {
             // In order to loop here, we have to change both the hours and the
             // minutes spinner (it wouldn't make any sense from a user's
             // perspective to not change the hours spinner)
-            if (minutes == 60) {
-                // Increment hours by 1 and reset minutes to 0
-                minutes = 0;
+            if (minutes > 59 /* max */) {
+                // Increment hours by 1 and remove the hour from the minute
+                // count
+                minutes -= 60;
                 ++hours;
 
                 spinMinutes.set_value(minutes);
                 spinHours.set_value(hours);
-            } else if (minutes == -1) {
-                // Decrement hours by 1 and reset minutes to 0
-                minutes = 45;
+            } else if (minutes < 0 /* min */) {
+                // Decrement hours by 1 and add the hour to the minute count
+                minutes += 60;
                 --hours;
 
                 spinMinutes.set_value(minutes);
@@ -273,4 +275,3 @@ function buildPrefsWidget() {
 
     return prefWidget;
 }
-

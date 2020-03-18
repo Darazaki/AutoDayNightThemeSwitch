@@ -30,8 +30,8 @@ let settings = null;
 
 
 // VALUES TAKEN FROM SETTINGS (BEGIN)
-// The following values do not have any impact on the program and are just there for
-// type checking purpose
+// The following values do not have any impact on the program and are just there
+// for type checking purpose
 
 /** The period at which the time of the day is checked */
 let timeCheckPeriod = 1 /* ms */;
@@ -56,7 +56,10 @@ const theme = {
 // VALUES TAKEN FROM SETTINGS (END)
 
 
-/** Get the values from the settings and make it so they can be updated automatically */
+/**
+ * Get the values from the settings and make it so they can be updated
+ * automatically
+ */
 function setupSettings() {
     // Get the GSchema source so we can lookup our settings
     let schema = Gio.SettingsSchemaSource.new_from_directory(
@@ -149,7 +152,7 @@ function setGTKTheme(themeName) {
     // Some 'Theme'\ -> Some \'Theme\'\\
     themeName = themeName.replace(/[\\]/g, '\\\\').replace(/[\'']/g, '\\\'');
 
-    // Exec: gsettings set org.gnome.desktop.interface gtk-theme 'My Awesome Theme'
+    // Exec: gsettings set org.gnome.desktop.interface gtk-theme 'Custom Theme'
     const cmdSetBase = 'gsettings set org.gnome.desktop.interface gtk-theme \'';
     GLib.spawn_command_line_async(cmdSetBase + themeName + '\'');
 }
@@ -233,7 +236,9 @@ function enable() {
 }
 
 
-/** Executed when the extension is disabled by the user or on session shutdown */
+/**
+ * Executed when the extension is disabled by the user or on session shutdown
+ */
 function disable() {
     // Remove the repeating check
     MainLoop.source_remove(timeCheckId);
