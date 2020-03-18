@@ -41,7 +41,7 @@ const nighttime = {
     // Expressed in minutes since the start of the day
 
     /** Night begins, day ends */
-    begin: 0 /* minutes */, 
+    begin: 0 /* minutes */,
     /** Night ends, day begin */
     end: 0 /* minutes */
 };
@@ -83,7 +83,7 @@ function setupSettings() {
 
 
     // DAY THEME
-    settings.connect('changed::day-theme', function() {
+    settings.connect('changed::day-theme', function () {
         theme.day = settings.get_string('day-theme');
         if (hasNightThemeBeenSet === false) {
             // It's daytime
@@ -92,15 +92,16 @@ function setupSettings() {
             // it was made to avoid the lag created by `setGTKTheme`
             hasNightThemeBeenSet = null;
 
-            // Uncommenting this will make theme changes instantaneous but it
-            // will also make your computer lag when executing this
+            // Uncommenting `setGTKTheme` will make theme changes instantaneous
+            // but it will also make your computer lag when editing the day
+            // theme's name
 
             //setGTKTheme(theme.day);
         }
     });
 
     // NIGHT THEME
-    settings.connect('changed::night-theme', function() {
+    settings.connect('changed::night-theme', function () {
         theme.night = settings.get_string('night-theme');
         if (hasNightThemeBeenSet === true) {
             // It's nighttime
@@ -109,29 +110,30 @@ function setupSettings() {
             // it was made to avoid the lag created by `setGTKTheme`
             hasNightThemeBeenSet = null;
 
-            // Uncommenting this will make theme changes instantaneous but it
-            // will also make your computer lag when executing this
+            // Uncommenting `setGTKTheme` will make theme changes instantaneous
+            // but it will also make your computer lag when editing the night
+            // theme's name
 
             //setGTKTheme(theme.night);
         }
     });
 
     // NIGHT TIME BEGIN
-    settings.connect('changed::nighttime-begin', function() {
+    settings.connect('changed::nighttime-begin', function () {
         // This it automatically updated so no need for extra tweaks
         nighttime.begin = settings.get_uint('nighttime-begin');
     });
-    
+
     // NIGHT TIME END
-    settings.connect('changed::nighttime-end', function() {
+    settings.connect('changed::nighttime-end', function () {
         // This it automatically updated so no need for extra tweaks
         nighttime.end = settings.get_uint('nighttime-end');
     });
 
     // TIME CHECK PERIOD
-    settings.connect('changed::time-check-period', function() {
+    settings.connect('changed::time-check-period', function () {
         timeCheckPeriod = settings.get_uint('time-check-period');
-        
+
         // Replace the period
         MainLoop.source_remove(timeCheckId);
         timeCheckId = MainLoop.timeout_add(timeCheckPeriod, timeCheck, null);
@@ -171,7 +173,7 @@ function setDayThemeIfNeeded() {
         // Either day theme or unknown
 
         hasNightThemeBeenSet = false;
-        
+
         setGTKTheme(theme.day);
     }
 }
@@ -186,7 +188,7 @@ function timeCheck() {
     let now = new Date();
     // Minutes elapsed since midnight
     let minutesInDay = now.getHours() * 60 + now.getMinutes();
-    
+
     if (nighttime.begin < nighttime.end) {
         //   day (end)    night    day (begin)
         // +++++++++++++---------+++++++++++++++
@@ -242,4 +244,4 @@ function disable() {
  * This function is absolutely vital to the proper functioning of this extension,
  * and what it does is literally nothing
  */
-function init() {}
+function init() { }
