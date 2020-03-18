@@ -24,12 +24,12 @@ function init() { }
  */
 function buildNighttimeRow(title, settingsId, settings) {
     // ROW TITLE
-    
+
     let labelTitle = new Gtk.Label({
         label: title,
         visible: true,
     });
-    
+
     // ENTRIES
 
     let spinHours = new Gtk.SpinButton({
@@ -42,27 +42,68 @@ function buildNighttimeRow(title, settingsId, settings) {
         hexpand: true,
     });
 
-    let initialValue = settings.get_uint(settingsId);
+    // This is the value that's stored inside the settings at the moment the row
+    // is being built
+    // The `| 0` part is just here to make type checking easier but doesn't
+    // actually do anything in that context (same goes with later uses)
+    let initialValue = settings.get_uint(settingsId) | 0;
 
-    spinHours.set_range(0, 23 /* hours */);
+    // The range should be (min - 1, max + 1) in order to make a looping spinner
+    spinHours.set_range(-1, 24 /* hours */);
     spinHours.set_increments(1 /* hours */, 0);
     spinHours.set_value(Math.floor(initialValue / 60));
     spinHours.connect(
         'value-changed',
         (spinHours) => {
+            let hours = spinHours.get_value() | 0;
+
+            // In order to enable looping:
+            // If the user tries incrementing the hours when it's already at its
+            // highest value, set it to the lowest one instead
+            // Also do the same with decrementing
+            if (hours == 24) {
+                hours = 0;
+                spinHours.set_value(hours);
+            } else if (hours == -1) {
+                hours = 23;
+                spinHours.set_value(hours);
+            }
+
             settings.set_uint(settingsId,
-                spinHours.get_value() * 60 + spinMinutes.get_value());
+                hours * 60 + spinMinutes.get_value());
         },
     );
 
-    spinMinutes.set_range(0, 59 /* minutes */);
+    // Make it loop! (see `spinHours`'s documentation above)
+    spinMinutes.set_range(-1, 60 /* minutes */);
     spinMinutes.set_increments(15 /* minutes */, 0);
     spinMinutes.set_value(initialValue % 60);
     spinMinutes.connect(
         'value-changed',
         (spinMinutes) => {
-            settings.set_uint(settingsId,
-                spinHours.get_value() * 60 + spinMinutes.get_value());
+            let minutes = spinMinutes.get_value() | 0;
+            let hours = spinHours.get_value() | 0;
+
+            // In order to loop here, we have to change both the hours and the
+            // minutes spinner (it wouldn't make any sense from a user's
+            // perspective to not change the hours spinner)
+            if (minutes == 60) {
+                // Increment hours by 1 and reset minutes to 0
+                minutes = 0;
+                ++hours;
+
+                spinMinutes.set_value(minutes);
+                spinHours.set_value(hours);
+            } else if (minutes == -1) {
+                // Decrement hours by 1 and reset minutes to 0
+                minutes = 45;
+                --hours;
+
+                spinMinutes.set_value(minutes);
+                spinHours.set_value(hours);
+            }
+
+            settings.set_uint(settingsId, hours * 60 + minutes);
         },
     );
 
@@ -72,7 +113,7 @@ function buildNighttimeRow(title, settingsId, settings) {
         label: 'h',
         visible: true,
     });
-    
+
 
     return [labelTitle, spinHours, labelSeparator, spinMinutes];
 }
