@@ -112,7 +112,7 @@ function buildNighttimeRow(title, settingsId, settings) {
     // HOURS/MINUTES SEPARATOR
 
     let labelSeparator = new Gtk.Label({
-        label: 'h',
+        label: ':',
         visible: true,
     });
 
