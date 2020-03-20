@@ -78,11 +78,6 @@ alternatives:
 > Automatically toggle between your light and dark GTK theme variants when
 > Night Light activates
 
-- [AutomaThemely](https://github.com/C2N14/AutomaThemely) by C2N14
-
-> Simple, set-and-forget python application for changing between desktop themes
-> according to light and dark hours
-
 - [Dark Mode
   Switcher](https://github.com/lossurdo/gnome-shell-extension-dark-mode) by
   lossurdo
