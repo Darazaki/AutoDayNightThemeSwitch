@@ -14,16 +14,20 @@ A GNOME extension to automatically switch theme depending on the time of the day
 
 ## Limitations
 
-- You cannot change the GTK theme the usual way anymore, use `adnts`'s preferences panel instead
-  - Note: No modifications to your system are made, it's just that this extension will assume what is inside its preferences is the theme you want and it will always change it back to that
+- You cannot change the GTK theme the usual way anymore, use `adnts`'s
+  preferences panel instead
+  - Note: No modifications to your system are made, it's just that this
+  extension will assume what is inside its preferences is the theme you want and
+  it will always change it back to that
 - It can **only** change the GTK theme
 - It cannot run custom scripts
 - 24h format only in the preferences
 
 ## Install
 
-Clone this repo and run `./install.sh path/to/install/dir` from the clone to
-create the `adnts@n.darazaki` subdirectory and copy the required files into it
+Clone this repo and run `path/to/repo/install.sh path/to/install/dir` from
+anywhere on your system to create the `adnts@n.darazaki` sub-directory and copy
+the required files into it
 
 The `path/to/install/dir` parameter defaults to
 `~/.local/share/gnome-shell/extensions`, the default user path where GNOME
@@ -65,9 +69,11 @@ Then re-login to make sure GNOME unloaded the extension
 ## Alternatives
 
 If you're unhappy with this extension, you might want to take a look at some
-alternatives :
+alternatives:
 
-- [Night Theme Switcher](https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension) by rmnvgr
+- [Night Theme
+  Switcher](https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension)
+  by rmnvgr
 
 > Automatically toggle between your light and dark GTK theme variants when
 > Night Light activates
@@ -76,6 +82,13 @@ alternatives :
 
 > Simple, set-and-forget python application for changing between desktop themes
 > according to light and dark hours
+
+- [Dark Mode
+  Switcher](https://github.com/lossurdo/gnome-shell-extension-dark-mode) by
+  lossurdo
+
+> Switch GNOME 3 theme to Dark Mode and back (this version supports only Adwaita
+> and Adwaita-dark)
 
 ## License
 
