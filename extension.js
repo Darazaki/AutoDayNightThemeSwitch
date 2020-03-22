@@ -10,6 +10,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 
 /** Identifier used for the time checking loop */
 let timeCheckId = 0;
+
 /** 
  * Optional bool that indicates if the night theme has been set
  * 
@@ -27,6 +28,9 @@ let hasNightThemeBeenSet = null;
 
 /** Extension's settings */
 let settings = null;
+
+/** GNOME's settings */
+let gnomeSettings = null;
 
 
 // VALUES TAKEN FROM SETTINGS (BEGIN)
@@ -145,16 +149,36 @@ function setupSettings() {
 
 
 /**
+ * Allow reading and writing values from the GNOME settings and automatically
+ * update the day/night themes when the user changes their GTK theme
+ */
+function setupGNOMESetting() {
+    // Get the GNOME settings
+    gnomeSettings = new Gio.Settings({
+        schema: 'org.gnome.desktop.interface',
+    });
+
+    // Update the extension's settings when the user changes their GTK theme
+    gnomeSettings.connect('changed::gtk-theme', function () {
+        let newTheme = gnomeSettings.get_string('gtk-theme');
+
+        if (isNighttime()) {
+            if (newTheme !== theme.night) {
+                settings.set_string('night-theme', newTheme);
+            }
+        } else if (newTheme !== theme.day) {
+            settings.set_string('day-theme', newTheme);
+        }
+    });
+}
+
+
+/**
  * Set the default GTK theme to a new theme.
  * @param {string} themeName The new theme's name.
  */
 function setGTKTheme(themeName) {
-    // Some 'Theme'\ -> Some \'Theme\'\\
-    themeName = themeName.replace(/[\\]/g, '\\\\').replace(/[\'']/g, '\\\'');
-
-    // Exec: gsettings set org.gnome.desktop.interface gtk-theme 'Custom Theme'
-    const cmdSetBase = 'gsettings set org.gnome.desktop.interface gtk-theme \'';
-    GLib.spawn_command_line_async(cmdSetBase + themeName + '\'');
+    gnomeSettings.set_string('gtk-theme', themeName);
 }
 
 
@@ -183,14 +207,16 @@ function setDayThemeIfNeeded() {
 
 
 /**
- * Check if it is day or night time and set the theme accordingly if needed
+ * Calculate if now is nighttime
  * 
- * @returns {boolean} true (which means repeat the loop indefinitely)
+ * @returns {boolean} Is it nighttime?
  */
-function timeCheck() {
+function isNighttime() {
     let now = new Date();
     // Minutes elapsed since midnight
     let minutesInDay = now.getHours() * 60 + now.getMinutes();
+    // Is it nighttime?
+    let result = false;
 
     if (nighttime.begin < nighttime.end) {
         //   day (end)    night    day (begin)
@@ -199,25 +225,33 @@ function timeCheck() {
         if (nighttime.begin <= minutesInDay && minutesInDay < nighttime.end) {
             // Night
 
-            setNightThemeIfNeeded();
-        } else {
-            // Day
-
-            setDayThemeIfNeeded();
+            result = true;
         }
     } else /* if (nightTime.begin >= nightTime.end) */ {
         //  night (end)   day   night (begin)
         // -------------+++++++---------------
 
-        if (nighttime.end <= minutesInDay && minutesInDay < nighttime.begin) {
-            // Day
-
-            setDayThemeIfNeeded();
-        } else {
+        if (minutesInDay < nighttime.end || nighttime.begin <= minutesInDay) {
             // Night
 
-            setNightThemeIfNeeded();
+            result = true;
         }
+    }
+
+    return result;
+}
+
+
+/**
+ * Check if it is day or night time and set the theme accordingly if needed
+ * 
+ * @returns {boolean} true (which means repeat the loop indefinitely)
+ */
+function timeCheck() {
+    if (isNighttime()) {
+        setNightThemeIfNeeded();
+    } else {
+        setDayThemeIfNeeded();
     }
 
     return true /* repeat */;
@@ -228,6 +262,9 @@ function timeCheck() {
 function enable() {
     // Initial setup for reading user preferences
     setupSettings();
+
+    // Setup for reading the GNOME interface preferences
+    setupGNOMESetting();
 
     // Run now
     timeCheck();
