@@ -13,6 +13,14 @@
       <default>'Adwaita-dark'</default>
       <summary>Night theme's name</summary>
     </key>
+    <key type="s" name="day-shell">
+      <default>''</default>
+      <summary>Day shell theme's name</summary>
+    </key>
+    <key type="s" name="night-shell">
+      <default>''</default>
+      <summary>Night shell theme's name</summary>
+    </key>
     <key type="u" name="nighttime-begin">
       <!-- 20:00 / 8 pm -->
       <default>1200</default>

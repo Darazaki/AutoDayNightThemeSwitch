@@ -6,6 +6,7 @@ const { GLib, Gio, GObject } = imports.gi;
 const MainLoop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const { main } = imports.ui;
 
 
 /** Identifier used for the time checking loop */
@@ -32,6 +33,13 @@ let settings = null;
 /** GNOME's settings */
 let gnomeSettings = null;
 
+/**
+ * User Themes shell settings
+ * 
+ * This variable will be `null` if the settings cannot be found
+ */
+let shellSettings = null;
+
 
 // VALUES TAKEN FROM SETTINGS (BEGIN)
 // The following values do not have any impact on the program and are just there
@@ -47,7 +55,7 @@ const nighttime = {
     /** Night begins, day ends */
     begin: 0 /* minutes */,
     /** Night ends, day begin */
-    end: 0 /* minutes */
+    end: 0 /* minutes */,
 };
 
 /** Day and night themes */
@@ -55,7 +63,15 @@ const theme = {
     /** Day theme's name */
     day: '',
     /** Night theme's name */
-    night: ''
+    night: '',
+}
+
+/** Day and night shell themes */
+const shell = {
+    /** Day shell theme's name */
+    day: '',
+    /** Night shell theme's name */
+    night: '',
 }
 // VALUES TAKEN FROM SETTINGS (END)
 
@@ -75,7 +91,9 @@ function setupSettings() {
     // Get the settings
     settings = new Gio.Settings({
         settings_schema: schema.lookup(
-            'org.gnome.shell.extensions.adnts@n.darazaki', true)
+            'org.gnome.shell.extensions.adnts@n.darazaki',
+            true,
+        ),
     });
 
     // Read settings
@@ -106,6 +124,15 @@ function setupSettings() {
             //setGTKTheme(theme.day);
         }
     });
+    settings.connect('changed::day-shell', function () {
+        shell.day = settings.get_string('day-shell');
+        if (hasNightThemeBeenSet === false) {
+            // It's daytime
+
+            // Will set the new shell theme after some time
+            hasNightThemeBeenSet = null;
+        }
+    });
 
     // NIGHT THEME
     settings.connect('changed::night-theme', function () {
@@ -122,6 +149,15 @@ function setupSettings() {
             // theme's name
 
             //setGTKTheme(theme.night);
+        }
+    });
+    settings.connect('changed::night-shell', function () {
+        shell.night = settings.get_string('night-shell');
+        if (hasNightThemeBeenSet === true) {
+            // It's nighttime
+
+            // Will set the new shell theme after some time
+            hasNightThemeBeenSet = null;
         }
     });
 
@@ -149,11 +185,11 @@ function setupSettings() {
 
 
 /**
- * Allow reading and writing values from the GNOME settings and automatically
+ * Allow reading and writing values from GNOME's settings and automatically
  * update the day/night themes when the user changes their GTK theme
  */
-function setupGNOMESetting() {
-    // Get the GNOME settings
+function setupGNOMESettings() {
+    // Get GNOME's settings
     gnomeSettings = new Gio.Settings({
         schema: 'org.gnome.desktop.interface',
     });
@@ -174,6 +210,59 @@ function setupGNOMESetting() {
 
 
 /**
+ * Allow reading and writing values from User Themes' settings and automatically
+ * update the day/night shell themes when the user changes their shell theme
+ * 
+ * @returns {boolean} If User Themes' settings could be found
+ */
+function setupShellSettings() {
+    // Get User Themes (this may fail)
+    let userThemesExtension = main.extensionManager.lookup(
+        'user-theme@gnome-shell-extensions.gcampax.github.com',
+    );
+    if (userThemesExtension === undefined) {
+        // User Themes isn't installed
+        return false /* settings not found */;
+    }
+
+    let schemaDir = userThemesExtension.dir.get_child('schemas');
+
+    let schema;
+    if (schemaDir.query_exists(null)) {
+        schema = Gio.SettingsSchemaSource.new_from_directory(
+            schemaDir.get_path(),
+            Gio.SettingsSchemaSource.get_default(),
+            false,
+        );
+    } else {
+        schema = Gio.SettingsSchemaSource.get_default();
+    }
+
+    shellSettings = new Gio.Settings({
+        settings_schema: schema.lookup(
+            'org.gnome.shell.extensions.user-theme',
+            true,
+        ),
+    });
+
+    // Update the extension's settings when the user changes their shell theme
+    shellSettings.connect('changed::name', function () {
+        let newTheme = shellSettings.get_string('name');
+
+        if (isNighttime()) {
+            if (newTheme !== shell.night) {
+                settings.set_string('night-shell', newTheme);
+            }
+        } else if (newTheme !== shell.day) {
+            settings.set_string('day-shell', newTheme);
+        }
+    });
+
+    return true /* settings found */;
+}
+
+
+/**
  * Set the default GTK theme to a new theme.
  * @param {string} themeName The new theme's name.
  */
@@ -182,26 +271,39 @@ function setGTKTheme(themeName) {
 }
 
 
-/** Set the GTK theme to the night theme if not already done */
-function setNightThemeIfNeeded() {
+/**
+ * Set the shell's theme
+ * @param {string} themeName The new theme's name
+ */
+function setShellTheme(themeName) {
+    if (shellSettings !== null) {
+        shellSettings.set_string('name', themeName);
+    }
+}
+
+
+/** Set the GTK and shell themes to the night themes if not already done */
+function setNightThemesIfNeeded() {
     if (hasNightThemeBeenSet !== true) {
         // Either night theme or unknown
 
         hasNightThemeBeenSet = true;
 
         setGTKTheme(theme.night);
+        setShellTheme(shell.night);
     }
 }
 
 
-/** Set the GTK theme to the day theme if not already done */
-function setDayThemeIfNeeded() {
+/** Set the GTK and shell themes to the day themes if not already done */
+function setDayThemesIfNeeded() {
     if (hasNightThemeBeenSet !== false) {
         // Either day theme or unknown
 
         hasNightThemeBeenSet = false;
 
         setGTKTheme(theme.day);
+        setShellTheme(shell.day);
     }
 }
 
@@ -249,9 +351,9 @@ function isNighttime() {
  */
 function timeCheck() {
     if (isNighttime()) {
-        setNightThemeIfNeeded();
+        setNightThemesIfNeeded();
     } else {
-        setDayThemeIfNeeded();
+        setDayThemesIfNeeded();
     }
 
     return true /* repeat */;
@@ -260,11 +362,11 @@ function timeCheck() {
 
 /** Executed when the extension is enabled by the user or on session boot */
 function enable() {
-    // Initial setup for reading user preferences
+    // Initial setup for reading user preferences, the GNOME interface
+    // preferences and the User Themes preferences
     setupSettings();
-
-    // Setup for reading the GNOME interface preferences
-    setupGNOMESetting();
+    setupGNOMESettings();
+    setupShellSettings();
 
     // Run now
     timeCheck();
@@ -283,7 +385,7 @@ function disable() {
 
 
 /**
- * This function is absolutely vital to the proper functioning of this extension,
- * and what it does is literally nothing
+ * This function is absolutely vital to the proper functioning of this
+ * extension, and what it does is literally nothing
  */
 function init() { }
