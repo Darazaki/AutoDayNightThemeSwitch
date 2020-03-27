@@ -286,7 +286,20 @@ function buildPrefsWidget() {
         use_markup: true,
         visible: true,
     });
-    prefWidget.attach(titleShellThemes, 0, 11, 4, 1);
+    prefWidget.attach(titleShellThemes, 0, 11, 3, 1);
+
+    let switchShellTheme = new Gtk.Switch({
+        active: settings.get_boolean('shell-enabled'),
+        visible: true,
+        halign: Gtk.Align.END,
+    });
+    prefWidget.attach(switchShellTheme, 3, 11, 1, 1);
+    settings.bind(
+        'shell-enabled',
+        switchShellTheme,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
 
     // SHELL THEME DAY
 

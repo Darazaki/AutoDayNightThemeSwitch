@@ -73,6 +73,9 @@ const shell = {
     /** Night shell theme's name */
     night: '',
 }
+
+/** Is the shell part of the extension enabled? */
+let isShellPartEnabled = false;
 // VALUES TAKEN FROM SETTINGS (END)
 
 
@@ -101,6 +104,7 @@ function setupExtensionSettings() {
     theme.night = settings.get_string('night-theme');
     shell.day = settings.get_string('day-shell');
     shell.night = settings.get_string('night-shell');
+    isShellPartEnabled = settings.get_boolean('shell-enabled');
     nighttime.begin = settings.get_uint('nighttime-begin');
     nighttime.end = settings.get_uint('nighttime-end');
     timeCheckPeriod = settings.get_uint('time-check-period');
@@ -182,6 +186,19 @@ function setupExtensionSettings() {
         // Replace the period
         MainLoop.source_remove(timeCheckId);
         timeCheckId = MainLoop.timeout_add(timeCheckPeriod, timeCheck, null);
+    });
+
+    // SHELL ENABLED
+    settings.connect('changed::shell-enabled', function () {
+        isShellPartEnabled = settings.get_boolean('shell-enabled');
+
+        if (isShellPartEnabled) {
+            // Set the new theme
+            hasNightThemeBeenSet = null;
+        } else {
+            // Disable connections with User Themes' settings
+            shellSettings = null;
+        }
     });
 }
 
@@ -280,7 +297,7 @@ function setGTKTheme(themeName) {
  * @param {string} themeName The new theme's name
  */
 function setShellTheme(themeName) {
-    if (isShellAvailable()) {
+    if (isShellPartEnabled && isShellAvailable()) {
         shellSettings.set_string('name', themeName);
     }
 }
@@ -354,7 +371,7 @@ function isNighttime() {
  * @returns {boolean} If the User Themes extension can be used
  */
 function isShellAvailable() {
-    return shellSettings !== null;
+    return shellSettings !== null || setupShellSettings();
 }
 
 
@@ -398,7 +415,7 @@ function enable() {
     // We must wait for the extension manager before we can access User Themes
     // and reset the theme to the right one depending on the time
     extensionManagerInitialized().then(function () {
-        if (setupShellSettings()) {
+        if (isShellPartEnabled && setupShellSettings()) {
             hasNightThemeBeenSet = null;
         }
     });
@@ -416,6 +433,10 @@ function enable() {
 function disable() {
     // Remove the repeating check
     MainLoop.source_remove(timeCheckId);
+
+    settings = null;
+    gnomeSettings = null;
+    shellSettings = null;
 }
 
 

@@ -21,6 +21,10 @@
       <default>''</default>
       <summary>Night shell theme's name</summary>
     </key>
+    <key type="b" name="shell-enabled">
+      <default>false</default>
+      <summary>If automatic shell theme switching is enabled</summary>
+    </key>
     <key type="u" name="nighttime-begin">
       <!-- 20:00 / 8 pm -->
       <default>1200</default>
