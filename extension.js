@@ -6,7 +6,7 @@ const { GLib, Gio, GObject } = imports.gi;
 const MainLoop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const { main } = imports.ui;
+const { extensionManager } = imports.ui.main;
 
 
 /** Identifier used for the time checking loop */
@@ -77,10 +77,10 @@ const shell = {
 
 
 /**
- * Get the values from the settings and make it so they can be updated
- * automatically
+ * Get the values from the extension's settings and make it so they can be
+ * updated automatically
  */
-function setupSettings() {
+function setupExtensionSettings() {
     // Get the GSchema source so we can lookup our settings
     let schema = Gio.SettingsSchemaSource.new_from_directory(
         Me.dir.get_child('schemas').get_path(),
@@ -99,6 +99,8 @@ function setupSettings() {
     // Read settings
     theme.day = settings.get_string('day-theme');
     theme.night = settings.get_string('night-theme');
+    shell.day = settings.get_string('day-shell');
+    shell.night = settings.get_string('night-shell');
     nighttime.begin = settings.get_uint('nighttime-begin');
     nighttime.end = settings.get_uint('nighttime-end');
     timeCheckPeriod = settings.get_uint('time-check-period');
@@ -107,7 +109,7 @@ function setupSettings() {
     // Watch for changes
 
 
-    // DAY THEME
+    // DAY THEMES
     settings.connect('changed::day-theme', function () {
         theme.day = settings.get_string('day-theme');
         if (hasNightThemeBeenSet === false) {
@@ -134,7 +136,7 @@ function setupSettings() {
         }
     });
 
-    // NIGHT THEME
+    // NIGHT THEMES
     settings.connect('changed::night-theme', function () {
         theme.night = settings.get_string('night-theme');
         if (hasNightThemeBeenSet === true) {
@@ -161,13 +163,13 @@ function setupSettings() {
         }
     });
 
-    // NIGHT TIME BEGIN
+    // NIGHTTIME BEGIN
     settings.connect('changed::nighttime-begin', function () {
         // This it automatically updated so no need for extra tweaks
         nighttime.begin = settings.get_uint('nighttime-begin');
     });
 
-    // NIGHT TIME END
+    // NIGHTTIME END
     settings.connect('changed::nighttime-end', function () {
         // This it automatically updated so no need for extra tweaks
         nighttime.end = settings.get_uint('nighttime-end');
@@ -217,7 +219,7 @@ function setupGNOMESettings() {
  */
 function setupShellSettings() {
     // Get User Themes (this may fail)
-    let userThemesExtension = main.extensionManager.lookup(
+    let userThemesExtension = extensionManager.lookup(
         'user-theme@gnome-shell-extensions.gcampax.github.com',
     );
     if (userThemesExtension === undefined) {
@@ -264,6 +266,7 @@ function setupShellSettings() {
 
 /**
  * Set the default GTK theme to a new theme.
+ * 
  * @param {string} themeName The new theme's name.
  */
 function setGTKTheme(themeName) {
@@ -273,10 +276,11 @@ function setGTKTheme(themeName) {
 
 /**
  * Set the shell's theme
+ * 
  * @param {string} themeName The new theme's name
  */
 function setShellTheme(themeName) {
-    if (shellSettings !== null) {
+    if (isShellAvailable()) {
         shellSettings.set_string('name', themeName);
     }
 }
@@ -344,10 +348,20 @@ function isNighttime() {
 }
 
 
+/** 
+ * Check if the User Themes extension can be used
+ * 
+ * @returns {boolean} If the User Themes extension can be used
+ */
+function isShellAvailable() {
+    return shellSettings !== null;
+}
+
+
 /**
  * Check if it is day or night time and set the theme accordingly if needed
  * 
- * @returns {boolean} true (which means repeat the loop indefinitely)
+ * @returns {boolean} `true` (which means repeat the loop indefinitely)
  */
 function timeCheck() {
     if (isNighttime()) {
@@ -360,13 +374,34 @@ function timeCheck() {
 }
 
 
+/**
+ * Make a promise that only finishes executing once the `extensionManager` has
+ * been initialized
+ * 
+ * @returns {Promise<void>} The promise
+ */
+async function extensionManagerInitialized() {
+    while (!extensionManager._initialized) {
+        // Prevent an infinite blocking loop and allow continuing execution
+        // while this loop is running in the background
+        await null;
+    }
+}
+
+
 /** Executed when the extension is enabled by the user or on session boot */
 function enable() {
     // Initial setup for reading user preferences, the GNOME interface
     // preferences and the User Themes preferences
-    setupSettings();
+    setupExtensionSettings();
     setupGNOMESettings();
-    setupShellSettings();
+    // We must wait for the extension manager before we can access User Themes
+    // and reset the theme to the right one depending on the time
+    extensionManagerInitialized().then(function () {
+        if (setupShellSettings()) {
+            hasNightThemeBeenSet = null;
+        }
+    });
 
     // Run now
     timeCheck();
