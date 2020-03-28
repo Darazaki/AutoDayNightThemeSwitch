@@ -74,8 +74,19 @@ const shell = {
     night: '',
 }
 
+/** Day and night commands */
+const command = {
+    /* Command executed when the day starts */
+    day: '',
+    /* Command executed when the night starts */
+    night: '',
+}
+
 /** Is the shell part of the extension enabled? */
 let isShellPartEnabled = false;
+
+/** Is command execution on theme switch enabled? */
+let areCommandsEnabled = false;
 // VALUES TAKEN FROM SETTINGS (END)
 
 
@@ -105,6 +116,9 @@ function setupExtensionSettings() {
     shell.day = settings.get_string('day-shell');
     shell.night = settings.get_string('night-shell');
     isShellPartEnabled = settings.get_boolean('shell-enabled');
+    command.day = settings.get_string('day-command');
+    command.night = settings.get_string('night-command');
+    areCommandsEnabled = settings.get_boolean('commands-enabled');
     nighttime.begin = settings.get_uint('nighttime-begin');
     nighttime.end = settings.get_uint('nighttime-end');
     timeCheckPeriod = settings.get_uint('time-check-period');
@@ -199,6 +213,23 @@ function setupExtensionSettings() {
             // Disable connections with User Themes' settings
             shellSettings = null;
         }
+    });
+
+    // Let's not run the commands on change
+
+    // COMMANDS ENABLED
+    settings.connect('changed::commands-enabled', function () {
+        areCommandsEnabled = settings.get_boolean('commands-enabled');
+    });
+
+    // DAY COMMAND
+    settings.connect('changed::day-command', function () {
+        command.day = settings.get_string('day-command');
+    });
+
+    // NIGHT COMMAND
+    settings.connect('changed::night-command', function () {
+        command.night = settings.get_string('night-command');
     });
 }
 
@@ -303,6 +334,35 @@ function setShellTheme(themeName) {
 }
 
 
+/**
+ * Run a command in the background using `/bin/sh -c 'COMMAND'` if commands are
+ * enabled
+ * 
+ * @param {string} command The command to execute
+ * 
+ * @returns {boolean} If spawning the command succeeded
+ */
+function runCommand(command) {
+    command = command.trim();
+
+    if (areCommandsEnabled && command.length != 0) {
+        return GLib.spawn_async(
+            null /* inherit working directory */,
+            ['/bin/sh', '-c', command],
+            null /* inherit environment variables */,
+            GLib.SpawnFlags.DEFAULT,
+            null /* nothing to execute before */,
+            null /* no extra data to pass */,
+            null /* no error handler */,
+        );
+    } else {
+        // Either commands are disabled so trying to run one should always fail
+        // or there is no command to execute so it should also fail
+        return false;
+    }
+}
+
+
 /** Set the GTK and shell themes to the night themes if not already done */
 function setNightThemesIfNeeded() {
     if (hasNightThemeBeenSet !== true) {
@@ -312,6 +372,7 @@ function setNightThemesIfNeeded() {
 
         setGTKTheme(theme.night);
         setShellTheme(shell.night);
+        runCommand(command.night);
     }
 }
 
@@ -325,6 +386,7 @@ function setDayThemesIfNeeded() {
 
         setGTKTheme(theme.day);
         setShellTheme(shell.day);
+        runCommand(command.day)
     }
 }
 
@@ -416,7 +478,11 @@ function enable() {
     // and reset the theme to the right one depending on the time
     extensionManagerInitialized().then(function () {
         if (isShellPartEnabled && setupShellSettings()) {
-            hasNightThemeBeenSet = null;
+            if (hasNightThemeBeenSet === true) {
+                setShellTheme(theme.night);
+            } else if (hasNightThemeBeenSet === false) {
+                setShellTheme(theme.day);
+            }
         }
     });
 
@@ -434,6 +500,7 @@ function disable() {
     // Remove the repeating check
     MainLoop.source_remove(timeCheckId);
 
+    // Stop watching for changes in the settings
     settings = null;
     gnomeSettings = null;
     shellSettings = null;

@@ -137,6 +137,10 @@ function buildPrefsWidget() {
             'org.gnome.shell.extensions.adnts@n.darazaki', true)
     });
 
+    // The current line inside the grid, solves a lot of pain when adding
+    // widgets
+    let line = 0;
+
     let prefWidget = new Gtk.Grid({
         margin: 18,
         column_spacing: 12,
@@ -153,7 +157,9 @@ function buildPrefsWidget() {
         use_markup: true,
         visible: true,
     });
-    prefWidget.attach(titleThemes, 0, 0, 4, 1);
+    prefWidget.attach(titleThemes, 0, line, 4, 1);
+
+    ++line;
 
     // THEME DAY
 
@@ -161,14 +167,14 @@ function buildPrefsWidget() {
         label: 'Day Theme',
         visible: true,
     });
-    prefWidget.attach(labelThemeDay, 0, 1, 1, 1);
+    prefWidget.attach(labelThemeDay, 0, line, 1, 1);
 
     let entryThemeDay = new Gtk.Entry({
         text: settings.get_string('day-theme'),
         visible: true,
         hexpand: true,
     });
-    prefWidget.attach(entryThemeDay, 1, 1, 3, 1);
+    prefWidget.attach(entryThemeDay, 1, line, 3, 1);
     settings.bind(
         'day-theme',
         entryThemeDay,
@@ -176,20 +182,22 @@ function buildPrefsWidget() {
         Gio.SettingsBindFlags.DEFAULT,
     );
 
+    ++line;
+
     // THEME NIGHT
 
     let labelThemeNight = new Gtk.Label({
         label: 'Night Theme',
         visible: true,
     });
-    prefWidget.attach(labelThemeNight, 0, 2, 1, 1);
+    prefWidget.attach(labelThemeNight, 0, line, 1, 1);
 
     let entryThemeNight = new Gtk.Entry({
         text: settings.get_string('night-theme'),
         visible: true,
         hexpand: true,
     });
-    prefWidget.attach(entryThemeNight, 1, 2, 3, 1);
+    prefWidget.attach(entryThemeNight, 1, line, 3, 1);
     settings.bind(
         'night-theme',
         entryThemeNight,
@@ -197,11 +205,15 @@ function buildPrefsWidget() {
         Gio.SettingsBindFlags.DEFAULT,
     );
 
+    ++line;
+
     // SEPARATOR
 
     prefWidget.attach(new Gtk.HSeparator({
         visible: true,
-    }), 0, 3, 4, 1);
+    }), 0, line, 4, 1);
+
+    ++line;
 
     // NIGHTTIME HEADER
 
@@ -211,7 +223,9 @@ function buildPrefsWidget() {
         use_markup: true,
         visible: true,
     });
-    prefWidget.attach(titleNighttime, 0, 4, 4, 1);
+    prefWidget.attach(titleNighttime, 0, line, 4, 1);
+
+    ++line;
 
     // NIGHTTIME BEGIN
 
@@ -219,8 +233,10 @@ function buildPrefsWidget() {
         'Start of Nighttime', 'nighttime-begin', settings);
     let nighttimeRowBeginLength = nighttimeRowBegin.length;
     for (let i = 0; i < nighttimeRowBeginLength; ++i) {
-        prefWidget.attach(nighttimeRowBegin[i], i, 5, 1, 1);
+        prefWidget.attach(nighttimeRowBegin[i], i, line, 1, 1);
     }
+
+    ++line;
 
     // NIGHTTIME END
 
@@ -228,14 +244,176 @@ function buildPrefsWidget() {
         'End of Nighttime', 'nighttime-end', settings);
     let nighttimeRowEndLength = nighttimeRowEnd.length;
     for (let i = 0; i < nighttimeRowEndLength; ++i) {
-        prefWidget.attach(nighttimeRowEnd[i], i, 6, 1, 1);
+        prefWidget.attach(nighttimeRowEnd[i], i, line, 1, 1);
     }
+
+    ++line;
 
     // SEPARATOR
 
     prefWidget.attach(new Gtk.HSeparator({
         visible: true,
-    }), 0, 7, 4, 1);
+    }), 0, line, 4, 1);
+
+    ++line;
+
+    // SHELL THEMES HEADER
+
+    let titleShellThemes = new Gtk.Label({
+        label: '<b>Day/Night Shell Themes</b>',
+        halign: Gtk.Align.START,
+        use_markup: true,
+        visible: true,
+    });
+    prefWidget.attach(titleShellThemes, 0, line, 3, 1);
+
+    let switchShellTheme = new Gtk.Switch({
+        active: settings.get_boolean('shell-enabled'),
+        visible: true,
+        halign: Gtk.Align.END,
+    });
+    prefWidget.attach(switchShellTheme, 3, line, 1, 1);
+    settings.bind(
+        'shell-enabled',
+        switchShellTheme,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    ++line;
+
+    // SHELL THEME DAY
+
+    let labelShellThemeDay = new Gtk.Label({
+        label: 'Day Theme',
+        visible: true,
+    });
+    prefWidget.attach(labelShellThemeDay, 0, line, 1, 1);
+
+    let entryShellThemeDay = new Gtk.Entry({
+        text: settings.get_string('day-shell'),
+        visible: true,
+        hexpand: true,
+    });
+    prefWidget.attach(entryShellThemeDay, 1, line, 3, 1);
+    settings.bind(
+        'day-shell',
+        entryShellThemeDay,
+        'text',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    ++line;
+
+    // SHELL THEME NIGHT
+
+    let labelShellThemeNight = new Gtk.Label({
+        label: 'Night Theme',
+        visible: true,
+    });
+    prefWidget.attach(labelShellThemeNight, 0, line, 1, 1);
+
+    let entryShellThemeNight = new Gtk.Entry({
+        text: settings.get_string('night-shell'),
+        visible: true,
+        hexpand: true,
+    });
+    prefWidget.attach(entryShellThemeNight, 1, line, 3, 1);
+    settings.bind(
+        'night-shell',
+        entryShellThemeNight,
+        'text',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    ++line;
+
+    // SEPARATOR
+
+    prefWidget.attach(new Gtk.HSeparator({
+        visible: true,
+    }), 0, line, 4, 1);
+
+    ++line;
+
+    // COMMANDS HEADER
+
+    let titleCommands = new Gtk.Label({
+        label: '<b>Day/Night Commands (executed with /bin/sh)</b>',
+        halign: Gtk.Align.START,
+        use_markup: true,
+        visible: true,
+    });
+    prefWidget.attach(titleCommands, 0, line, 3, 1);
+
+    let switchCommands = new Gtk.Switch({
+        active: settings.get_boolean('shell-enabled'),
+        visible: true,
+        halign: Gtk.Align.END,
+    });
+    prefWidget.attach(switchCommands, 3, line, 1, 1);
+    settings.bind(
+        'commands-enabled',
+        switchCommands,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    ++line;
+
+    // COMMAND DAY
+
+    let labelCommandDay = new Gtk.Label({
+        label: 'Day Command',
+        visible: true,
+    });
+    prefWidget.attach(labelCommandDay, 0, line, 1, 1);
+
+    let entryCommandDay = new Gtk.Entry({
+        text: settings.get_string('day-command'),
+        visible: true,
+        hexpand: true,
+    });
+    prefWidget.attach(entryCommandDay, 1, line, 3, 1);
+    settings.bind(
+        'day-command',
+        entryCommandDay,
+        'text',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    ++line;
+
+    // COMMAND NIGHT
+
+    let labelCommandNight = new Gtk.Label({
+        label: 'Night Command',
+        visible: true,
+    });
+    prefWidget.attach(labelCommandNight, 0, line, 1, 1);
+
+    let entryCommandNight = new Gtk.Entry({
+        text: settings.get_string('night-command'),
+        visible: true,
+        hexpand: true,
+    });
+    prefWidget.attach(entryCommandNight, 1, line, 3, 1);
+    settings.bind(
+        'night-command',
+        entryCommandNight,
+        'text',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
+    ++line;
+
+    // SEPARATOR
+
+    prefWidget.attach(new Gtk.HSeparator({
+        visible: true,
+    }), 0, line, 4, 1);
+
+    ++line;
 
     // ADVANCED HEADER
 
@@ -245,7 +423,9 @@ function buildPrefsWidget() {
         use_markup: true,
         visible: true,
     });
-    prefWidget.attach(titleAdvanced, 0, 8, 4, 1);
+    prefWidget.attach(titleAdvanced, 0, line, 4, 1);
+
+    ++line;
 
     // TIME CHECK PERIOD
 
@@ -253,7 +433,7 @@ function buildPrefsWidget() {
         label: 'Time Check Period (in ms)',
         visible: true,
     });
-    prefWidget.attach(labelCheckPeriod, 0, 9, 1, 1);
+    prefWidget.attach(labelCheckPeriod, 0, line, 1, 1);
 
     let spinCheckPeriod = new Gtk.SpinButton({
         visible: true,
@@ -270,78 +450,7 @@ function buildPrefsWidget() {
                 spinCheckPeriod.get_value());
         },
     );
-    prefWidget.attach(spinCheckPeriod, 1, 9, 3, 1);
-
-    // SEPARATOR
-
-    prefWidget.attach(new Gtk.HSeparator({
-        visible: true,
-    }), 0, 10, 4, 1);
-
-    // SHELL THEMES HEADER
-
-    let titleShellThemes = new Gtk.Label({
-        label: '<b>Day/Night Shell Themes</b>',
-        halign: Gtk.Align.START,
-        use_markup: true,
-        visible: true,
-    });
-    prefWidget.attach(titleShellThemes, 0, 11, 3, 1);
-
-    let switchShellTheme = new Gtk.Switch({
-        active: settings.get_boolean('shell-enabled'),
-        visible: true,
-        halign: Gtk.Align.END,
-    });
-    prefWidget.attach(switchShellTheme, 3, 11, 1, 1);
-    settings.bind(
-        'shell-enabled',
-        switchShellTheme,
-        'active',
-        Gio.SettingsBindFlags.DEFAULT,
-    );
-
-    // SHELL THEME DAY
-
-    let labelShellThemeDay = new Gtk.Label({
-        label: 'Day Theme',
-        visible: true,
-    });
-    prefWidget.attach(labelShellThemeDay, 0, 12, 1, 1);
-
-    let entryShellThemeDay = new Gtk.Entry({
-        text: settings.get_string('day-shell'),
-        visible: true,
-        hexpand: true,
-    });
-    prefWidget.attach(entryShellThemeDay, 1, 12, 3, 1);
-    settings.bind(
-        'day-shell',
-        entryShellThemeDay,
-        'text',
-        Gio.SettingsBindFlags.DEFAULT,
-    );
-
-    // SHELL THEME NIGHT
-
-    let labelShellThemeNight = new Gtk.Label({
-        label: 'Night Theme',
-        visible: true,
-    });
-    prefWidget.attach(labelShellThemeNight, 0, 13, 1, 1);
-
-    let entryShellThemeNight = new Gtk.Entry({
-        text: settings.get_string('night-shell'),
-        visible: true,
-        hexpand: true,
-    });
-    prefWidget.attach(entryShellThemeNight, 1, 13, 3, 1);
-    settings.bind(
-        'night-shell',
-        entryShellThemeNight,
-        'text',
-        Gio.SettingsBindFlags.DEFAULT,
-    );
+    prefWidget.attach(spinCheckPeriod, 1, line, 3, 1);
 
 
     return prefWidget;
