@@ -1,6 +1,6 @@
 # Auto Day/Night Theme Switch `adnts`
 
-A GNOME extension to automatically switch theme depending on the time of the day
+A GNOME extension to automatically switch themes depending on the time of the day
 
 ![Beautiful banner](images/banner.png)
 
@@ -8,22 +8,27 @@ A GNOME extension to automatically switch theme depending on the time of the day
 
 ![Screen pic](images/screenshot.png)
 
-- Customize your day/night GTK themes
+- Customize your day/night GTK & GNOME Shell themes
+- Run custom commands when day/night comes
 - Tweak when the day/night change happen
 - Edit how often the extension should look for the day/night change (Advanced)
 
 ## Limitations
 
-- You cannot change the GTK theme the usual way anymore, use `adnts`'s
-  preferences panel instead
-  - Note: No modifications to your system are made, it's just that this
-  extension will assume what is inside its preferences is the theme you want and
-  it will always change it back to that
-- It can **only** change the GTK theme
-- It cannot run custom scripts
+- Changing the GTK/GNOME Shell theme the usual during the daytime way will only
+  set it for the day state and won't change it for the night state (same with
+  changing it during the night state), use `adnts`'s preferences panel instead
 - 24h format only in the preferences
+- There is no guarantee that the day/night commands are ran only once during a
+  full day:
+  - A change of GTK/GNOME Shell theme will re-run the command for the current
+    state
+  - If several theme changes happen quickly enough, it is possible that the
+    command will be ran several times in parallel: if that's a problem you
+    should move your commands to a script and watch for other instances of that
+    script when it is started
 
-## Install
+## Install/Update
 
 Clone this repo and run `path/to/repo/install.sh path/to/install/dir` from
 anywhere on your system to create the `adnts@n.darazaki` sub-directory and copy
@@ -47,15 +52,18 @@ git clone https://github.com/Darazaki/AutoDayNightThemeSwitch adnts
 sudo adnts/install.sh /usr/share/gnome-shell/extensions
 ```
 
-After that, configure and enable the extension from GNOME Tweaks or with:
+After that, re-login then configure and enable the extension from GNOME Tweaks
+or with:
 
 ```sh
 gnome-extensions prefs adnts@n.darazaki
 gnome-extensions enable adnts@n.darazaki
 ```
 
-Your GTK theme will be overridden with the ones specified in `adnts`'s
-preferences panel so make sure to change your theme here
+Once enabled your GTK theme will be overridden with the ones specified in
+`adnts`'s preferences panel so make sure to change your themes there
+
+Leave a GNOME Shell theme field blank to use the default one
 
 ## Uninstall
 
