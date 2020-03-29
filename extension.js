@@ -479,9 +479,9 @@ function enable() {
     extensionManagerInitialized().then(function () {
         if (isShellPartEnabled && setupShellSettings()) {
             if (hasNightThemeBeenSet === true) {
-                setShellTheme(theme.night);
+                setShellTheme(shell.night);
             } else if (hasNightThemeBeenSet === false) {
-                setShellTheme(theme.day);
+                setShellTheme(shell.day);
             }
         }
     });
