@@ -152,7 +152,7 @@ function buildPrefsWidget() {
     // THEMES HEADER
 
     let titleThemes = new Gtk.Label({
-        label: '<b>Day/Night Themes</b>',
+        label: '<b>Day/Night GTK Themes</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true,
