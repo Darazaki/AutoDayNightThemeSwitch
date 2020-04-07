@@ -9,26 +9,40 @@ const Me = ExtensionUtils.getCurrentExtension();
 const { extensionManager } = imports.ui.main;
 
 
+/**
+ * A state for a something managed by this extension
+ * 
+ * If unknown, the action corresponding to the current time will be performed
+ */
+const State = {
+    UNKNOWN: 0,
+    DAY: 1,
+    NIGHT: 2,
+};
+
+// If the functionality is available, make `State`'s fields constant and prevent
+// new fields from being added
+if (Object.freeze) {
+    Object.freeze(State);
+}
+
+
+/** Something managed by this extension */
+class Managed {
+    constructor() {
+        this.day = '';
+        this.night = '';
+        this.state = State.UNKNOWN;
+        this.enabled = false;
+    }
+}
+
+
 /** Identifier used for the time checking loop */
 let timeCheckId = 0;
 
-/** 
- * Optional bool that indicates if the night theme has been set
- * 
- * This variable can take the following values:
- * 
- * - `null` => unknown
- * - `true` => night theme set
- * - `false` => light theme set
- * 
- * If unknown, the theme corresponding to the current time will be set
- * 
- * @type {boolean | null}
- */
-let hasNightThemeBeenSet = null;
-
 /** Extension's settings */
-let settings = null;
+let extensionSettings = null;
 
 /** GNOME's settings */
 let gnomeSettings = null;
@@ -58,35 +72,14 @@ const nighttime = {
     end: 0 /* minutes */,
 };
 
-/** Day and night themes */
-const theme = {
-    /** Day theme's name */
-    day: '',
-    /** Night theme's name */
-    night: '',
-}
+/** GTK themes */
+const gtk = new Managed();
 
-/** Day and night shell themes */
-const shell = {
-    /** Day shell theme's name */
-    day: '',
-    /** Night shell theme's name */
-    night: '',
-}
+/** Shell themes */
+const shell = new Managed();
 
 /** Day and night commands */
-const command = {
-    /* Command executed when the day starts */
-    day: '',
-    /* Command executed when the night starts */
-    night: '',
-}
-
-/** Is the shell part of the extension enabled? */
-let isShellPartEnabled = false;
-
-/** Is command execution on theme switch enabled? */
-let areCommandsEnabled = false;
+const command = new Managed();
 // VALUES TAKEN FROM SETTINGS (END)
 
 
@@ -103,7 +96,7 @@ function setupExtensionSettings() {
     );
 
     // Get the settings
-    settings = new Gio.Settings({
+    extensionSettings = new Gio.Settings({
         settings_schema: schema.lookup(
             'org.gnome.shell.extensions.adnts@n.darazaki',
             true,
@@ -111,31 +104,31 @@ function setupExtensionSettings() {
     });
 
     // Read settings
-    theme.day = settings.get_string('day-theme');
-    theme.night = settings.get_string('night-theme');
-    shell.day = settings.get_string('day-shell');
-    shell.night = settings.get_string('night-shell');
-    isShellPartEnabled = settings.get_boolean('shell-enabled');
-    command.day = settings.get_string('day-command');
-    command.night = settings.get_string('night-command');
-    areCommandsEnabled = settings.get_boolean('commands-enabled');
-    nighttime.begin = settings.get_uint('nighttime-begin');
-    nighttime.end = settings.get_uint('nighttime-end');
-    timeCheckPeriod = settings.get_uint('time-check-period');
+    gtk.day = extensionSettings.get_string('day-theme');
+    gtk.night = extensionSettings.get_string('night-theme');
+    shell.day = extensionSettings.get_string('day-shell');
+    shell.night = extensionSettings.get_string('night-shell');
+    shell.enabled = extensionSettings.get_boolean('shell-enabled');
+    command.day = extensionSettings.get_string('day-command');
+    command.night = extensionSettings.get_string('night-command');
+    command.enabled = extensionSettings.get_boolean('commands-enabled');
+    nighttime.begin = extensionSettings.get_uint('nighttime-begin');
+    nighttime.end = extensionSettings.get_uint('nighttime-end');
+    timeCheckPeriod = extensionSettings.get_uint('time-check-period');
 
 
     // Watch for changes
 
 
     // DAY THEMES
-    settings.connect('changed::day-theme', function () {
-        theme.day = settings.get_string('day-theme');
-        if (hasNightThemeBeenSet === false) {
+    extensionSettings.connect('changed::day-theme', function () {
+        gtk.day = extensionSettings.get_string('day-theme');
+        if (gtk.state === State.DAY) {
             // It's daytime
 
             // This will set the new theme after a certain amount of time,
             // it was made to avoid the lag created by `setGTKTheme`
-            hasNightThemeBeenSet = null;
+            gtk.state = State.UNKNOWN;
 
             // Uncommenting `setGTKTheme` will make theme changes instantaneous
             // but it will also make your computer lag when editing the day
@@ -144,25 +137,25 @@ function setupExtensionSettings() {
             //setGTKTheme(theme.day);
         }
     });
-    settings.connect('changed::day-shell', function () {
-        shell.day = settings.get_string('day-shell');
-        if (hasNightThemeBeenSet === false) {
+    extensionSettings.connect('changed::day-shell', function () {
+        shell.day = extensionSettings.get_string('day-shell');
+        if (shell.state === State.DAY) {
             // It's daytime
 
             // Will set the new shell theme after some time
-            hasNightThemeBeenSet = null;
+            shell.state = State.UNKNOWN;
         }
     });
 
     // NIGHT THEMES
-    settings.connect('changed::night-theme', function () {
-        theme.night = settings.get_string('night-theme');
-        if (hasNightThemeBeenSet === true) {
+    extensionSettings.connect('changed::night-theme', function () {
+        gtk.night = extensionSettings.get_string('night-theme');
+        if (gtk.state === State.NIGHT) {
             // It's nighttime
 
             // This will set the new theme after a certain amount of time,
             // it was made to avoid the lag created by `setGTKTheme`
-            hasNightThemeBeenSet = null;
+            gtk.state = State.UNKNOWN;
 
             // Uncommenting `setGTKTheme` will make theme changes instantaneous
             // but it will also make your computer lag when editing the night
@@ -171,31 +164,31 @@ function setupExtensionSettings() {
             //setGTKTheme(theme.night);
         }
     });
-    settings.connect('changed::night-shell', function () {
-        shell.night = settings.get_string('night-shell');
-        if (hasNightThemeBeenSet === true) {
+    extensionSettings.connect('changed::night-shell', function () {
+        shell.night = extensionSettings.get_string('night-shell');
+        if (shell.state === State.NIGHT) {
             // It's nighttime
 
             // Will set the new shell theme after some time
-            hasNightThemeBeenSet = null;
+            shell.state = State.UNKNOWN;
         }
     });
 
     // NIGHTTIME BEGIN
-    settings.connect('changed::nighttime-begin', function () {
+    extensionSettings.connect('changed::nighttime-begin', function () {
         // This it automatically updated so no need for extra tweaks
-        nighttime.begin = settings.get_uint('nighttime-begin');
+        nighttime.begin = extensionSettings.get_uint('nighttime-begin');
     });
 
     // NIGHTTIME END
-    settings.connect('changed::nighttime-end', function () {
+    extensionSettings.connect('changed::nighttime-end', function () {
         // This it automatically updated so no need for extra tweaks
-        nighttime.end = settings.get_uint('nighttime-end');
+        nighttime.end = extensionSettings.get_uint('nighttime-end');
     });
 
     // TIME CHECK PERIOD
-    settings.connect('changed::time-check-period', function () {
-        timeCheckPeriod = settings.get_uint('time-check-period');
+    extensionSettings.connect('changed::time-check-period', function () {
+        timeCheckPeriod = extensionSettings.get_uint('time-check-period');
 
         // Replace the period
         MainLoop.source_remove(timeCheckId);
@@ -203,12 +196,12 @@ function setupExtensionSettings() {
     });
 
     // SHELL ENABLED
-    settings.connect('changed::shell-enabled', function () {
-        isShellPartEnabled = settings.get_boolean('shell-enabled');
+    extensionSettings.connect('changed::shell-enabled', function () {
+        shell.enabled = extensionSettings.get_boolean('shell-enabled');
 
-        if (isShellPartEnabled) {
+        if (shell.enabled) {
             // Set the new theme
-            hasNightThemeBeenSet = null;
+            shell.state = State.UNKNOWN;
         } else {
             // Disable connections with User Themes' settings
             shellSettings = null;
@@ -218,18 +211,18 @@ function setupExtensionSettings() {
     // Let's not run the commands on change
 
     // COMMANDS ENABLED
-    settings.connect('changed::commands-enabled', function () {
-        areCommandsEnabled = settings.get_boolean('commands-enabled');
+    extensionSettings.connect('changed::commands-enabled', function () {
+        command.enabled = extensionSettings.get_boolean('commands-enabled');
     });
 
     // DAY COMMAND
-    settings.connect('changed::day-command', function () {
-        command.day = settings.get_string('day-command');
+    extensionSettings.connect('changed::day-command', function () {
+        command.day = extensionSettings.get_string('day-command');
     });
 
     // NIGHT COMMAND
-    settings.connect('changed::night-command', function () {
-        command.night = settings.get_string('night-command');
+    extensionSettings.connect('changed::night-command', function () {
+        command.night = extensionSettings.get_string('night-command');
     });
 }
 
@@ -249,11 +242,11 @@ function setupGNOMESettings() {
         let newTheme = gnomeSettings.get_string('gtk-theme');
 
         if (isNighttime()) {
-            if (newTheme !== theme.night) {
-                settings.set_string('night-theme', newTheme);
+            if (newTheme !== gtk.night) {
+                extensionSettings.set_string('night-theme', newTheme);
             }
-        } else if (newTheme !== theme.day) {
-            settings.set_string('day-theme', newTheme);
+        } else if (newTheme !== gtk.day) {
+            extensionSettings.set_string('day-theme', newTheme);
         }
     });
 }
@@ -301,10 +294,10 @@ function setupShellSettings() {
 
         if (isNighttime()) {
             if (newTheme !== shell.night) {
-                settings.set_string('night-shell', newTheme);
+                extensionSettings.set_string('night-shell', newTheme);
             }
         } else if (newTheme !== shell.day) {
-            settings.set_string('day-shell', newTheme);
+            extensionSettings.set_string('day-shell', newTheme);
         }
     });
 
@@ -328,7 +321,7 @@ function setGTKTheme(themeName) {
  * @param {string} themeName The new theme's name
  */
 function setShellTheme(themeName) {
-    if (isShellPartEnabled && isShellAvailable()) {
+    if (shell.enabled && isShellAvailable()) {
         shellSettings.set_string('name', themeName);
     }
 }
@@ -338,17 +331,17 @@ function setShellTheme(themeName) {
  * Run a command in the background using `/bin/sh -c 'COMMAND'` if commands are
  * enabled
  * 
- * @param {string} command The command to execute
+ * @param {string} cmd The command to execute
  * 
  * @returns {boolean} If spawning the command succeeded
  */
-function runCommand(command) {
-    command = command.trim();
+function runCommand(cmd) {
+    cmd = cmd.trim();
 
-    if (areCommandsEnabled && command.length != 0) {
+    if (command.enabled && cmd.length != 0) {
         return GLib.spawn_async(
             null /* inherit working directory */,
-            ['/bin/sh', '-c', command],
+            ['/bin/sh', '-c', cmd],
             null /* inherit environment variables */,
             GLib.SpawnFlags.DEFAULT,
             null /* nothing to execute before */,
@@ -365,28 +358,42 @@ function runCommand(command) {
 
 /** Set the GTK and shell themes to the night themes if not already done */
 function setNightThemesIfNeeded() {
-    if (hasNightThemeBeenSet !== true) {
-        // Either night theme or unknown
+    if (gtk.state !== State.NIGHT) {
+        // Either day theme or unknown
 
-        hasNightThemeBeenSet = true;
+        setGTKTheme(gtk.night);
+        gtk.state = State.NIGHT;
+    }
 
-        setGTKTheme(theme.night);
+    if (shell.state !== State.NIGHT) {
         setShellTheme(shell.night);
+        shell.state = State.NIGHT;
+    }
+
+    if (command.state !== State.NIGHT) {
         runCommand(command.night);
+        command.state = State.NIGHT;
     }
 }
 
 
 /** Set the GTK and shell themes to the day themes if not already done */
 function setDayThemesIfNeeded() {
-    if (hasNightThemeBeenSet !== false) {
-        // Either day theme or unknown
+    if (gtk.state !== State.DAY) {
+        // Either night theme or unknown
 
-        hasNightThemeBeenSet = false;
+        setGTKTheme(gtk.day);
+        gtk.state = State.DAY;
+    }
 
-        setGTKTheme(theme.day);
+    if (shell.state !== State.DAY) {
         setShellTheme(shell.day);
-        runCommand(command.day)
+        shell.state = State.DAY;
+    }
+
+    if (command.state !== State.DAY) {
+        runCommand(command.day);
+        command.state = State.DAY;
     }
 }
 
@@ -477,14 +484,13 @@ function enable() {
     // We must wait for the extension manager before we can access User Themes
     // and reset the theme to the right one depending on the time
     extensionManagerInitialized().then(function () {
-        if (isShellPartEnabled && setupShellSettings()) {
-            if (hasNightThemeBeenSet === true) {
-                setShellTheme(shell.night);
-            } else if (hasNightThemeBeenSet === false) {
-                setShellTheme(shell.day);
-            }
+        if (shell.enabled && setupShellSettings()) {
+            timeCheck();
         }
     });
+
+    // Always enabled with the extension
+    gtk.enabled = true;
 
     // Run now
     timeCheck();
@@ -500,8 +506,11 @@ function disable() {
     // Remove the repeating check
     MainLoop.source_remove(timeCheckId);
 
+    // Always disabled with the extension
+    gtk.enabled = false;
+
     // Stop watching for changes in the settings
-    settings = null;
+    extensionSettings = null;
     gnomeSettings = null;
     shellSettings = null;
 }
