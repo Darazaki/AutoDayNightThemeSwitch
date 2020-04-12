@@ -18,12 +18,14 @@ A GNOME extension to automatically switch themes depending on the time of the da
 - Changing the GTK/GNOME Shell theme the usual during the daytime way will only
   set it for the day state and won't change it for the night state (same with
   changing it during the night state), use `adnts`'s preferences panel instead
+- GNOME Shell themes are only supported if the [User
+  Themes](https://extensions.gnome.org/extension/19/user-themes) extension is
+  installed and enabled
 - 24h format only in the preferences
 - There is no guarantee that the day/night commands are ran only once during a
   full day:
-  - A change of GTK/GNOME Shell theme will re-run the command for the current
-    state
-  - If several theme changes happen quickly enough, it is possible that the
+  - Re-enabling the extension will re-run the command for the current state
+  - If several state changes happen quickly enough, it is possible that the
     command will be ran several times in parallel: if that's a problem you
     should move your commands to a script and watch for other instances of that
     script when it is started
