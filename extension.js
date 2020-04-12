@@ -84,7 +84,7 @@ const command = new Managed();
 
 
 /**
- * Get the values from the extension's settings and make it so they can be
+ * Get the values from the extension's settings and make it so they will be
  * updated automatically
  */
 function setupExtensionSettings() {
@@ -306,9 +306,9 @@ function setupShellSettings() {
 
 
 /**
- * Set the default GTK theme to a new theme.
+ * Set the default GTK theme to a new theme
  * 
- * @param {string} themeName The new theme's name.
+ * @param {string} themeName The new theme's name
  */
 function setGTKTheme(themeName) {
     gnomeSettings.set_string('gtk-theme', themeName);
@@ -316,7 +316,8 @@ function setGTKTheme(themeName) {
 
 
 /**
- * Set the shell's theme
+ * Set the shell's theme if the shell theme functionality is enabled and User
+ * Themes can be used
  * 
  * @param {string} themeName The new theme's name
  */
@@ -356,7 +357,10 @@ function runCommand(cmd) {
 }
 
 
-/** Set the GTK and shell themes to the night themes if not already done */
+/**
+ * Set the GTK and shell themes to the night themes and run the night command if
+ * not already done
+ */
 function setNightThemesIfNeeded() {
     if (gtk.state !== State.NIGHT) {
         // Either day theme or unknown
@@ -377,7 +381,10 @@ function setNightThemesIfNeeded() {
 }
 
 
-/** Set the GTK and shell themes to the day themes if not already done */
+/**
+ * Set the GTK and shell themes to the day themes and run the day command if not
+ * already done
+ */
 function setDayThemesIfNeeded() {
     if (gtk.state !== State.DAY) {
         // Either night theme or unknown
@@ -445,7 +452,8 @@ function isShellAvailable() {
 
 
 /**
- * Check if it is day or night time and set the theme accordingly if needed
+ * Check if it is day or night time and set the themes and run the command
+ * accordingly if needed
  * 
  * @returns {boolean} `true` (which means repeat the loop indefinitely)
  */
@@ -495,7 +503,11 @@ function enable() {
     // Run now
     timeCheck();
     // Run every `timeCheckPeriod` starting from now
-    timeCheckId = MainLoop.timeout_add(timeCheckPeriod, timeCheck, null);
+    timeCheckId = MainLoop.timeout_add(
+        timeCheckPeriod /* time interval between each run */,
+        timeCheck /* the function to run */,
+        null /* no extra data passed to the function */,
+    );
 }
 
 
@@ -506,13 +518,15 @@ function disable() {
     // Remove the repeating check
     MainLoop.source_remove(timeCheckId);
 
-    // Always disabled with the extension
-    gtk.enabled = false;
-
     // Stop watching for changes in the settings
     extensionSettings = null;
     gnomeSettings = null;
     shellSettings = null;
+
+    // Disable everything when the extension is disabled
+    gtk.enabled = false;
+    shell.enabled = false;
+    command.enabled = false;
 }
 
 
