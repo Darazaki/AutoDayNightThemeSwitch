@@ -500,6 +500,11 @@ function enable() {
     // Always enabled with the extension
     gtk.enabled = true;
 
+    // Reset the states
+    gtk.state = State.UNKNOWN;
+    shell.state = State.UNKNOWN;
+    command.state = State.UNKNOWN;
+
     // Run now
     timeCheck();
     // Run every `timeCheckPeriod` starting from now
