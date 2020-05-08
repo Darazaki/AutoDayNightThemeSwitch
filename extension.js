@@ -493,6 +493,7 @@ function enable() {
     // and reset the theme to the right one depending on the time
     extensionManagerInitialized().then(function () {
         if (shell.enabled && setupShellSettings()) {
+            shell.state = State.UNKNOWN;
             timeCheck();
         }
     });
