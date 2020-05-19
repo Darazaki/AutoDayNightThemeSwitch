@@ -525,9 +525,31 @@ function disable() {
     MainLoop.source_remove(timeCheckId);
 
     // Stop watching for changes in the settings
-    extensionSettings = null;
-    gnomeSettings = null;
-    shellSettings = null;
+    if (extensionSettings !== null) {
+        extensionSettings.disconnect('changed::day-theme');
+        extensionSettings.disconnect('changed::day-shell');
+        extensionSettings.disconnect('changed::night-theme');
+        extensionSettings.disconnect('changed::night-shell');
+        extensionSettings.disconnect('changed::day-command');
+        extensionSettings.disconnect('changed::night-command');
+        extensionSettings.disconnect('changed::nighttime-begin');
+        extensionSettings.disconnect('changed::nighttime-end');
+        extensionSettings.disconnect('changed::time-check-period');
+        extensionSettings.disconnect('changed::shell-enabled');
+        extensionSettings.disconnect('changed::commands-enabled');
+
+        extensionSettings = null;
+    }
+
+    if (gnomeSettings !== null) {
+        gnomeSettings.disconnect('changed::gtk-theme');
+        gnomeSettings = null;
+    }
+
+    if (shellSettings !== null) {
+        shellSettings.disconnect('changed::name');
+        shellSettings = null;
+    }
 
     // Disable everything when the extension is disabled
     gtk.enabled = false;
