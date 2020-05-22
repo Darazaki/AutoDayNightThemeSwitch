@@ -347,7 +347,7 @@ function buildPrefsWidget() {
     prefWidget.attach(titleCommands, 0, line, 3, 1);
 
     let switchCommands = new Gtk.Switch({
-        active: settings.get_boolean('shell-enabled'),
+        active: settings.get_boolean('commands-enabled'),
         visible: true,
         halign: Gtk.Align.END,
     });
