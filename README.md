@@ -1,6 +1,7 @@
 # Auto Day/Night Theme Switch `adnts`
 
-A GNOME extension to automatically switch themes depending on the time of the day
+A GNOME extension to automatically switch themes depending on the time of the
+day
 
 ![Beautiful banner](images/banner.png)
 
@@ -105,6 +106,9 @@ Every kind of contribution is welcome!
 
 If you want something to be changed, please open an issue or a PR and I'll take
 a look at your suggestions ASAP
+
+To help translating `adnts` into your own language, see
+[translations/README.md](translations/README.md)
 
 Any contribution will be published under the same licensing terms indicated
 previously

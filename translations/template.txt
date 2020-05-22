@@ -1,0 +1,22 @@
+Translation by Your Name <mail.address@example.com>
+
+# In the preferences panel:
+
+"Day/Night GTK Themes" = ""
+"Day Theme" = ""
+"Night Theme" = ""
+
+"Nighttime (24h format)" = ""
+"Start of Nighttime" = ""
+"End of Nighttime" = ""
+
+"Day/Night Shell Themes" = ""
+"Day Theme" = ""
+"Night Theme" = ""
+
+"Day/Night Commands (executed with /bin/sh)" = ""
+"Day Command" = ""
+"Night Command" = ""
+
+"Advanced" = ""
+"Time Check Period (in ms)" = ""
