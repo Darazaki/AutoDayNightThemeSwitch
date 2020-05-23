@@ -1,0 +1,22 @@
+Translation by Onno Giesmann <nutzer3105@gmail.com>, 2020
+
+# In the preferences panel:
+
+"Day/Night GTK Themes" = "GTK-Themen für Tag/Nacht"
+"Day Theme" = "Tag-Thema"
+"Night Theme" = "Nacht-Thema"
+
+"Nighttime (24h format)" = "Nachtzeit (24h-Format)"
+"Start of Nighttime" = "Beginn der Nacht"
+"End of Nighttime" = "Ende der Nacht"
+
+"Day/Night Shell Themes" = "Shell-Themen für Tag/Nacht"
+"Day Theme" = "Tag-Thema"
+"Night Theme" = "Nacht-Thema"
+
+"Day/Night Commands (executed with /bin/sh)" = "Befehle für Tag/Nacht (ausgeführt mit /bin/sh)"
+"Day Command" = "Befehl für Tag"
+"Night Command" = "Befehl für Nacht"
+
+"Advanced" = "Erweitert"
+"Time Check Period (in ms)" = "Intervall Zeitprüfung (in ms)"
