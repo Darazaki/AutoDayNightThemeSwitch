@@ -5,6 +5,14 @@
 const { Gio, Gtk } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const Config = imports.misc.config;
+
+
+// `extensionManager` may not be available in the current version of GNOME Shell
+// but it's necessary in order to change the shell theme
+//
+// `extensionManager` should be available on gnome-shell >= 3.34
+const canChangeShellTheme = parseInt(Config.PACKAGE_VERSION.split('.')[1]) > 32;
 
 
 /**
@@ -257,84 +265,87 @@ function buildPrefsWidget() {
 
     ++line;
 
-    // SHELL THEMES HEADER
+    // Don't show shell theme settings if they can't be used
+    if (canChangeShellTheme) {
+        // SHELL THEMES HEADER
 
-    let titleShellThemes = new Gtk.Label({
-        label: '<b>Day/Night Shell Themes</b>',
-        halign: Gtk.Align.START,
-        use_markup: true,
-        visible: true,
-    });
-    prefWidget.attach(titleShellThemes, 0, line, 3, 1);
+        let titleShellThemes = new Gtk.Label({
+            label: '<b>Day/Night Shell Themes</b>',
+            halign: Gtk.Align.START,
+            use_markup: true,
+            visible: true,
+        });
+        prefWidget.attach(titleShellThemes, 0, line, 3, 1);
 
-    let switchShellTheme = new Gtk.Switch({
-        active: settings.get_boolean('shell-enabled'),
-        visible: true,
-        halign: Gtk.Align.END,
-    });
-    prefWidget.attach(switchShellTheme, 3, line, 1, 1);
-    settings.bind(
-        'shell-enabled',
-        switchShellTheme,
-        'active',
-        Gio.SettingsBindFlags.DEFAULT,
-    );
+        let switchShellTheme = new Gtk.Switch({
+            active: settings.get_boolean('shell-enabled'),
+            visible: true,
+            halign: Gtk.Align.END,
+        });
+        prefWidget.attach(switchShellTheme, 3, line, 1, 1);
+        settings.bind(
+            'shell-enabled',
+            switchShellTheme,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT,
+        );
 
-    ++line;
+        ++line;
 
-    // SHELL THEME DAY
+        // SHELL THEME DAY
 
-    let labelShellThemeDay = new Gtk.Label({
-        label: 'Day Theme',
-        visible: true,
-    });
-    prefWidget.attach(labelShellThemeDay, 0, line, 1, 1);
+        let labelShellThemeDay = new Gtk.Label({
+            label: 'Day Theme',
+            visible: true,
+        });
+        prefWidget.attach(labelShellThemeDay, 0, line, 1, 1);
 
-    let entryShellThemeDay = new Gtk.Entry({
-        text: settings.get_string('day-shell'),
-        visible: true,
-        hexpand: true,
-    });
-    prefWidget.attach(entryShellThemeDay, 1, line, 3, 1);
-    settings.bind(
-        'day-shell',
-        entryShellThemeDay,
-        'text',
-        Gio.SettingsBindFlags.DEFAULT,
-    );
+        let entryShellThemeDay = new Gtk.Entry({
+            text: settings.get_string('day-shell'),
+            visible: true,
+            hexpand: true,
+        });
+        prefWidget.attach(entryShellThemeDay, 1, line, 3, 1);
+        settings.bind(
+            'day-shell',
+            entryShellThemeDay,
+            'text',
+            Gio.SettingsBindFlags.DEFAULT,
+        );
 
-    ++line;
+        ++line;
 
-    // SHELL THEME NIGHT
+        // SHELL THEME NIGHT
 
-    let labelShellThemeNight = new Gtk.Label({
-        label: 'Night Theme',
-        visible: true,
-    });
-    prefWidget.attach(labelShellThemeNight, 0, line, 1, 1);
+        let labelShellThemeNight = new Gtk.Label({
+            label: 'Night Theme',
+            visible: true,
+        });
+        prefWidget.attach(labelShellThemeNight, 0, line, 1, 1);
 
-    let entryShellThemeNight = new Gtk.Entry({
-        text: settings.get_string('night-shell'),
-        visible: true,
-        hexpand: true,
-    });
-    prefWidget.attach(entryShellThemeNight, 1, line, 3, 1);
-    settings.bind(
-        'night-shell',
-        entryShellThemeNight,
-        'text',
-        Gio.SettingsBindFlags.DEFAULT,
-    );
+        let entryShellThemeNight = new Gtk.Entry({
+            text: settings.get_string('night-shell'),
+            visible: true,
+            hexpand: true,
+        });
+        prefWidget.attach(entryShellThemeNight, 1, line, 3, 1);
+        settings.bind(
+            'night-shell',
+            entryShellThemeNight,
+            'text',
+            Gio.SettingsBindFlags.DEFAULT,
+        );
 
-    ++line;
+        ++line;
 
-    // SEPARATOR
+        // SEPARATOR
 
-    prefWidget.attach(new Gtk.HSeparator({
-        visible: true,
-    }), 0, line, 4, 1);
+        prefWidget.attach(new Gtk.HSeparator({
+            visible: true,
+        }), 0, line, 4, 1);
 
-    ++line;
+        ++line;
+    }
 
     // COMMANDS HEADER
 

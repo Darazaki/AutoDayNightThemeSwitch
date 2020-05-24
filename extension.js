@@ -259,6 +259,11 @@ function setupGNOMESettings() {
  * @returns {boolean} If User Themes' settings could be found
  */
 function setupShellSettings() {
+    // `extensionManager` may not exist on the current GNOME Shell version
+    if (extensionManager === undefined) {
+        return false /* `extensionManager` doesn't exist */;
+    }
+
     // Get User Themes (this may fail)
     let userThemesExtension = extensionManager.lookup(
         'user-theme@gnome-shell-extensions.gcampax.github.com',
@@ -475,10 +480,13 @@ function timeCheck() {
  * @returns {Promise<void>} The promise
  */
 async function extensionManagerInitialized() {
-    while (!extensionManager._initialized) {
-        // Prevent an infinite blocking loop and allow continuing execution
-        // while this loop is running in the background
-        await null;
+    if (extensionManager && (extensionManager._initialized !== undefined
+        || extensionManager._initted !== undefined)) {
+        while (!extensionManager._initialized && !extensionManager._initted) {
+            // Prevent an infinite blocking loop and allow continuing execution
+            // while this loop is running in the background
+            await null;
+        }
     }
 }
 
