@@ -6,6 +6,16 @@ const { Gio, Gtk } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Config = imports.misc.config;
+const Gettext = imports.gettext;
+
+
+// Init translations
+Gettext.textdomain('adnts@n.darazaki');
+Gettext.bindtextdomain(
+    'adnts@n.darazaki',
+    Me.dir.get_child('locale').get_path(),
+);
+const _ = Gettext.gettext;
 
 
 // `extensionManager` may not be available in the current version of GNOME Shell
@@ -160,7 +170,7 @@ function buildPrefsWidget() {
     // THEMES HEADER
 
     let titleThemes = new Gtk.Label({
-        label: '<b>Day/Night GTK Themes</b>',
+        label: '<b>' + _('Day/Night GTK Themes') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true,
@@ -172,7 +182,7 @@ function buildPrefsWidget() {
     // THEME DAY
 
     let labelThemeDay = new Gtk.Label({
-        label: 'Day Theme',
+        label: _('Day Theme'),
         visible: true,
     });
     prefWidget.attach(labelThemeDay, 0, line, 1, 1);
@@ -195,7 +205,7 @@ function buildPrefsWidget() {
     // THEME NIGHT
 
     let labelThemeNight = new Gtk.Label({
-        label: 'Night Theme',
+        label: _('Night Theme'),
         visible: true,
     });
     prefWidget.attach(labelThemeNight, 0, line, 1, 1);
@@ -226,7 +236,7 @@ function buildPrefsWidget() {
     // NIGHTTIME HEADER
 
     let titleNighttime = new Gtk.Label({
-        label: '<b>Nighttime (24h format)</b>',
+        label: '<b>' + _('Nighttime (24h format)') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true,
@@ -238,7 +248,10 @@ function buildPrefsWidget() {
     // NIGHTTIME BEGIN
 
     let nighttimeRowBegin = buildNighttimeRow(
-        'Start of Nighttime', 'nighttime-begin', settings);
+        _('Start of Nighttime'),
+        'nighttime-begin',
+        settings,
+    );
     let nighttimeRowBeginLength = nighttimeRowBegin.length;
     for (let i = 0; i < nighttimeRowBeginLength; ++i) {
         prefWidget.attach(nighttimeRowBegin[i], i, line, 1, 1);
@@ -249,7 +262,10 @@ function buildPrefsWidget() {
     // NIGHTTIME END
 
     let nighttimeRowEnd = buildNighttimeRow(
-        'End of Nighttime', 'nighttime-end', settings);
+        _('End of Nighttime'),
+        'nighttime-end',
+        settings,
+    );
     let nighttimeRowEndLength = nighttimeRowEnd.length;
     for (let i = 0; i < nighttimeRowEndLength; ++i) {
         prefWidget.attach(nighttimeRowEnd[i], i, line, 1, 1);
@@ -270,7 +286,7 @@ function buildPrefsWidget() {
         // SHELL THEMES HEADER
 
         let titleShellThemes = new Gtk.Label({
-            label: '<b>Day/Night Shell Themes</b>',
+            label: '<b>' + _('Day/Night Shell Themes') + '</b>',
             halign: Gtk.Align.START,
             use_markup: true,
             visible: true,
@@ -295,7 +311,7 @@ function buildPrefsWidget() {
         // SHELL THEME DAY
 
         let labelShellThemeDay = new Gtk.Label({
-            label: 'Day Theme',
+            label: _('Day Theme'),
             visible: true,
         });
         prefWidget.attach(labelShellThemeDay, 0, line, 1, 1);
@@ -318,7 +334,7 @@ function buildPrefsWidget() {
         // SHELL THEME NIGHT
 
         let labelShellThemeNight = new Gtk.Label({
-            label: 'Night Theme',
+            label: _('Night Theme'),
             visible: true,
         });
         prefWidget.attach(labelShellThemeNight, 0, line, 1, 1);
@@ -350,7 +366,7 @@ function buildPrefsWidget() {
     // COMMANDS HEADER
 
     let titleCommands = new Gtk.Label({
-        label: '<b>Day/Night Commands (executed with /bin/sh)</b>',
+        label: '<b>' + _('Day/Night Commands (executed with /bin/sh)') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true,
@@ -375,7 +391,7 @@ function buildPrefsWidget() {
     // COMMAND DAY
 
     let labelCommandDay = new Gtk.Label({
-        label: 'Day Command',
+        label: _('Day Command'),
         visible: true,
     });
     prefWidget.attach(labelCommandDay, 0, line, 1, 1);
@@ -398,7 +414,7 @@ function buildPrefsWidget() {
     // COMMAND NIGHT
 
     let labelCommandNight = new Gtk.Label({
-        label: 'Night Command',
+        label: _('Night Command'),
         visible: true,
     });
     prefWidget.attach(labelCommandNight, 0, line, 1, 1);
@@ -429,7 +445,7 @@ function buildPrefsWidget() {
     // ADVANCED HEADER
 
     let titleAdvanced = new Gtk.Label({
-        label: '<b>Advanced</b>',
+        label: '<b>' + _('Advanced') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
         visible: true,
@@ -441,7 +457,7 @@ function buildPrefsWidget() {
     // TIME CHECK PERIOD
 
     let labelCheckPeriod = new Gtk.Label({
-        label: 'Time Check Period (in ms)',
+        label: _('Time Check Period (in ms)'),
         visible: true,
     });
     prefWidget.attach(labelCheckPeriod, 0, line, 1, 1);

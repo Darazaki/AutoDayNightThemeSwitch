@@ -56,6 +56,9 @@ cp "$src/schemas/gschemas.compiled" \
     "$src/schemas/org.gnome.shell.extensions.adnts@n.darazaki.gschema.xml" \
     "$path/adnts@n.darazaki/schemas" \
     || die "Cannot copy files to '$path/adnts@n.darazaki/schemas'"
+cp -r "$src/locale" \
+    "$path/adnts@n.darazaki/locale" \
+    || die "Cannot copy files to '$path/adnts@n.darazaki/locale'"
 
 # Done!
 echo 'Installation finished!'
