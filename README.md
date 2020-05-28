@@ -21,7 +21,7 @@ day
   changing it during the night state), use `adnts`'s preferences panel instead
 - GNOME Shell themes are only supported if the [User
   Themes](https://extensions.gnome.org/extension/19/user-themes) extension is
-  installed and enabled
+  installed and enabled and if GNOME Shell's version is 3.34 or later
 - 24h format only in the preferences
 - There is no guarantee that the day/night commands are ran only once during a
   full day:
