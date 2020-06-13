@@ -142,7 +142,7 @@ class MainModule extends Module {
     }
 
     onEnabled() {
-        let schema = Gio.SettingsSchemaSource.new_from_dir(
+        let schema = Gio.SettingsSchemaSource.new_from_directory(
             Me.dir.get_child('schemas').get_path(),
             Gio.SettingsSchemaSource.get_default(),
             false /* non-trusted ("gschemas.compiled" might be corrupted) */,
