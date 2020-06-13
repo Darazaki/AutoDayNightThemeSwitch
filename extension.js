@@ -96,7 +96,7 @@ class Module {
             }
         }
     }
-    
+
     get enabled() {
         return this._enabled;
     }
@@ -132,7 +132,7 @@ class MainModule extends Module {
         super();
 
         // Public:
-        
+
         /** Extension settings */
         this.settings = undefined;
         /** GTK Themes module */
@@ -154,16 +154,19 @@ class MainModule extends Module {
                 true /* recursively look for the schema */,
             ),
         });
-        
+
         // The GTK module is always enabled when the extension is enabled
         this.gtk.enabled = true;
+
+        // Finally, check for nighttime
+        this.timeCheck.enabled = true;
     }
-    
+
     onDisabled() {
         // Disable every module
         this.timeCheck.enabled = false;
         this.gtk.enabled = false;
-        
+
         // Free the memory
         this.settings.destroy();
         this.settings = undefined;
@@ -182,14 +185,14 @@ class NighttimeModule extends Module {
         super();
 
         // Public:
-        
+
         /** Beginning of nighttime */
         this.begin = undefined;
         /** End of nighttime */
         this.end = undefined;
 
         // Private:
-        
+
         /** Connected signals id */
         this._signalIds = undefined;
     }
@@ -216,7 +219,7 @@ class NighttimeModule extends Module {
         for (let id of this._signalIds) {
             settings.disconnect(id);
         }
-        
+
         // Shouldn't free a whole lot of memory but still
         this._signalIds = undefined;
         this.begin = undefined;
@@ -238,14 +241,14 @@ class TimeCheckModule extends Module {
         super();
 
         // Public:
-        
+
         /** Modules who's states are managed here */
         this.modules = modules;
         /** Period at which the state of the day is updated */
         this.period = undefined;
 
         // Private:
-        
+
         /** Time check module's main loop id */
         this._id = undefined;
         /** Signal id used to watch for changes */
@@ -257,7 +260,7 @@ class TimeCheckModule extends Module {
 
         this.applyCurrentState();
         this.startClock();
-        
+
         this._signalId = extension.settings.connect('changed::time-check-period', () => {
             this.period = extension.settings.get_uint('time-check-period');
 
@@ -291,9 +294,11 @@ class TimeCheckModule extends Module {
     applyCurrentState() {
         // Current state
         let state = this.isNighttime() ? State.NIGHT : State.DAY;
-        
+
         // Set current state for each module (disabled modules are ignored)
-        this.modules.forEach(module => module.state = state);
+        for (let mod of this.modules) {
+            mod.state = state;
+        }
     }
 
     /**
@@ -411,7 +416,7 @@ class GtkModule extends Module {
         for (let id of this._signalIds) {
             this.extension.settings.disconnect(id);
         }
-        
+
         this.gtkSettings.disconnect(this._gtkSignalId);
 
         // Free memory
