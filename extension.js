@@ -139,6 +139,8 @@ class MainModule extends Module {
         this.gtk = new GtkModule();
         /** Time check module */
         this.timeCheck = new TimeCheckModule(this.gtk);
+        /** Nighttime module */
+        this.nighttime = new NighttimeModule();
     }
 
     onEnabled() {
@@ -159,12 +161,14 @@ class MainModule extends Module {
         this.gtk.enabled = true;
 
         // Finally, check for nighttime
+        this.nighttime.enabled = true;
         this.timeCheck.enabled = true;
     }
 
     onDisabled() {
         // Disable every module
         this.timeCheck.enabled = false;
+        this.nighttime.enabled = false;
         this.gtk.enabled = false;
 
         // Free the memory
