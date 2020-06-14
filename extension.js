@@ -3,6 +3,7 @@
 
 // Imports:
 const { GLib, Gio, GObject } = imports.gi;
+const MainLoop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const { extensionManager } = imports.ui.main;
@@ -46,6 +47,7 @@ function runCommand(command) {
         return false;
     }
 }
+
 
 /** Something managed by this extension */
 class Module {
@@ -287,11 +289,15 @@ class TimeCheckModule extends Module {
     }
 
     startClock() {
-        this._id = setInterval(this.applyCurrentState, this.period);
+        this._id = MainLoop.timeout_add(
+            this.period,
+            this.applyCurrentState,
+            null /* no extra data to be passed */,
+        );
     }
 
     stopClock() {
-        clearInterval(this._id);
+        MainLoop.source_remove(this._id);
     }
 
     /** Apply current state to each module in `this.modules` */
@@ -303,6 +309,8 @@ class TimeCheckModule extends Module {
         for (let mod of this.modules) {
             mod.state = state;
         }
+
+        return true /* continue to check the time */;
     }
 
     /**
