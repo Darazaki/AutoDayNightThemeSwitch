@@ -439,6 +439,23 @@ class GtkModule extends Module {
         this._gtkSignalId = undefined;
         this._signalId = undefined;
     }
+
+    onDayStateSet() {
+        this.setTheme(this.day);
+    }
+
+    onNightStateSet() {
+        this.setTheme(this.night);
+    }
+
+    /**
+     * Set the current GTK theme
+     * 
+     * @param {string} theme The theme's name
+     */
+    setTheme(theme) {
+        this.gtkSettings.set_string(theme);
+    }
 }
 
 
