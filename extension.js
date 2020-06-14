@@ -31,7 +31,7 @@ let extension;
 function runCommand(command) {
     command = command.trim();
 
-    if (command.enabled && command.length != 0) {
+    if (command.length != 0) {
         return GLib.spawn_async(
             null /* inherit working directory */,
             ['/bin/sh', '-c', command],
