@@ -454,7 +454,7 @@ class GtkModule extends Module {
      * @param {string} theme The theme's name
      */
     setTheme(theme) {
-        this.gtkSettings.set_string(theme);
+        this.gtkSettings.set_string('gtk-theme', theme);
     }
 }
 
