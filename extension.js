@@ -222,7 +222,7 @@ class NighttimeModule extends Module {
 
     onDisabled() {
         // Disconnect all the signals connected in `this.onEnabled`
-        for (let id of this._signalIds) {
+        for (const id of this._signalIds) {
             settings.disconnect(id);
         }
 
@@ -306,7 +306,7 @@ class TimeCheckModule extends Module {
         let state = this.isNighttime() ? State.NIGHT : State.DAY;
 
         // Set current state for each module (disabled modules are ignored)
-        for (let mod of this.modules) {
+        for (const mod of this.modules) {
             mod.state = state;
         }
 
@@ -425,7 +425,7 @@ class GtkModule extends Module {
 
     onDisabled() {
         // Disconnect signals
-        for (let id of this._signalIds) {
+        for (const id of this._signalIds) {
             this.extension.settings.disconnect(id);
         }
 
