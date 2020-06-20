@@ -3,8 +3,9 @@
 
 
 // Imports:
-const { extension } = imports.modules.Global;
-const { Base } = imports.modules;
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const { extension } = Me.imports.modules.Global;
+const { Base } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 

@@ -3,8 +3,8 @@
 
 
 // Imports:
-const { Base, Gtk, Nighttime, TimeCheck } = imports.modules;
-const Me = ExtensionUtils.getCurrentExtension();
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const { Base, Gtk, Nighttime, TimeCheck } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 

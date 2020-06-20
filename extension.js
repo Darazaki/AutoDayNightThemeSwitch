@@ -2,8 +2,9 @@
 
 
 // Imports:
-const { extension } = imports.modules.Global;
-const { Main } = imports.modules;
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const { extension } = Me.imports.modules.Global;
+const { Main } = Me.imports.modules;
 
 
 /** Called automatically when the extension is initialized */
