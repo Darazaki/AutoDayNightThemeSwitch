@@ -59,6 +59,9 @@ cp "$src/schemas/gschemas.compiled" \
 cp -r "$src/locale" \
     "$path/adnts@n.darazaki/locale" \
     || die "Cannot copy files to '$path/adnts@n.darazaki/locale'"
+cp -r "$src/modules" \
+    "$path/adnts@n.darazaki/modules" \
+    || die "Cannot copy files to '$path/adnts@n.darazaki/modules'"
 
 # Done!
 echo 'Installation finished!'
