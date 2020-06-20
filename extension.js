@@ -395,7 +395,7 @@ class GtkModule extends Module {
                 }
             }),
             extension.settings.connect('changed::night-theme', () => {
-                this.day = extension.settings.get_string('night-theme');
+                this.night = extension.settings.get_string('night-theme');
                 if (this.state === State.NIGHT) {
                     // It's nighttime
 
