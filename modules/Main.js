@@ -4,7 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Global, Gtk, Nighttime, TimeCheck } = Me.imports.modules;
+const { Base, Commands, Global, Gtk, Nighttime, TimeCheck } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -23,10 +23,17 @@ var Module = class Module extends Base.Module {
         this.settings = undefined;
         /** GTK Themes module */
         this.gtk = new Gtk.Module();
+        /** Command execution module */
+        this.commands = new Commands();
         /** Time check module */
         this.timeCheck = new TimeCheck.Module(this.gtk);
         /** Nighttime module */
         this.nighttime = new Nighttime.Module();
+
+        // Private:
+
+        /** All connected extension settings signals' ids */
+        this._signalIds = undefined;
     }
 
     onEnabled() {
@@ -43,8 +50,18 @@ var Module = class Module extends Base.Module {
             ),
         });
 
+        // Observe changes
+        this._signalIds = [
+            this.settings.connect('changed::commands-enabled', () => {
+                this.commands.enabled = this.settings.get_boolean('commands-enabled');
+            }),
+        ];
+
         // The GTK module is always enabled when the extension is enabled
         this.gtk.enabled = true;
+
+        // Optionally enable the command execution module
+        this.commands.enabled = this.settings.get_boolean('commands-enabled');
 
         // Finally, check for nighttime
         this.nighttime.enabled = true;
@@ -52,9 +69,15 @@ var Module = class Module extends Base.Module {
     }
 
     onDisabled() {
+        // Disconnect signals
+        for (const id of this._signalIds) {
+            this.settings.disconnect(id);
+        }
+
         // Disable every module
         this.timeCheck.enabled = false;
         this.nighttime.enabled = false;
+        this.commands.enabled = false;
         this.gtk.enabled = false;
 
         // Free the memory
