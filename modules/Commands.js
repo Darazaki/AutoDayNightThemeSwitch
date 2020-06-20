@@ -8,6 +8,15 @@ const { Base, Global } = Me.imports.modules;
 const { Glib } = imports.gi;
 
 
+/**
+ * Custom command execution module
+ * 
+ * Execution is done through the `Global.runCommand` function
+ * 
+ * Unlike other modules, changing the commands in the preferences won't trigger
+ * a new execution on a day/night command edit since this could lead to
+ * unfinished commands being executed
+ */
 var Module = class Module extends Base.Module {
     constructor() {
         super();
