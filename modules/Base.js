@@ -3,7 +3,8 @@
 
 
 // Imports:
-const { State } = imports.modules.Global;
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const { State } = Me.imports.modules.Global;
 
 
 /** Something managed by this extension */
