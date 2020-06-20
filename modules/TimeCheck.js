@@ -1,4 +1,4 @@
-//! THe module that periodically set the modules' state according to the time
+//! The module that periodically set the modules' state according to the time
 'use strict';
 
 
