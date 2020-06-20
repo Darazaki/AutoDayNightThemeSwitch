@@ -16,7 +16,7 @@ const MainLoop = imports.mainloop;
  */
 class Module extends Base.Module {
     /**
-     * @param {Array<Module>} modules Modules who's states are managed here
+     * @param {Array<Base.Module>} modules Modules who's states are managed here
      */
     constructor(...modules) {
         super();

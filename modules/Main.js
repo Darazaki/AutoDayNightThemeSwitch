@@ -22,11 +22,11 @@ class Module extends Base.Module {
         /** Extension settings */
         this.settings = undefined;
         /** GTK Themes module */
-        this.gtk = new GtkModule();
+        this.gtk = new Gtk.Module();
         /** Time check module */
-        this.timeCheck = new TimeCheckModule(this.gtk);
+        this.timeCheck = new TimeCheck.Module(this.gtk);
         /** Nighttime module */
-        this.nighttime = new NighttimeModule();
+        this.nighttime = new Nighttime.Module();
     }
 
     onEnabled() {
