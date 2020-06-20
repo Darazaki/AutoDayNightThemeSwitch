@@ -4,8 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { extension } = Me.imports.modules.Global;
-const { Base } = Me.imports.modules;
+const { Base, Global } = Me.imports.modules;
 const MainLoop = imports.mainloop;
 
 
@@ -37,13 +36,13 @@ var Module = class Module extends Base.Module {
     }
 
     onEnabled() {
-        this.period = extension.settings.get_uint('time-check-period');
+        this.period = Global.extension.settings.get_uint('time-check-period');
 
         this.applyCurrentState();
         this.startClock();
 
-        this._signalId = extension.settings.connect('changed::time-check-period', () => {
-            this.period = extension.settings.get_uint('time-check-period');
+        this._signalId = Global.extension.settings.connect('changed::time-check-period', () => {
+            this.period = Global.extension.settings.get_uint('time-check-period');
 
             this.stopClock();
             this.startClock();
@@ -55,7 +54,7 @@ var Module = class Module extends Base.Module {
         this.stopClock();
 
         // Stop watching for changes
-        extension.settings.disconnect(this._signalId);
+        Global.extension.settings.disconnect(this._signalId);
 
         // Free memory (keep `this.modules` since it cannot be read again)
         this.period = undefined;
@@ -81,7 +80,7 @@ var Module = class Module extends Base.Module {
     /** Apply current state to each module in `this.modules` */
     applyCurrentState() {
         // Current state
-        let state = this.isNighttime() ? State.NIGHT : State.DAY;
+        let state = this.isNighttime() ? Global.State.NIGHT : Global.State.DAY;
 
         // Set current state for each module (disabled modules are ignored)
         for (const mod of this.modules) {
@@ -101,7 +100,7 @@ var Module = class Module extends Base.Module {
         // Is it nighttime?
         let result = false;
         // Nighttime module
-        let nighttime = extension.nighttime;
+        let nighttime = Global.extension.nighttime;
 
         if (nighttime.begin < nighttime.end) {
             //   day (end)    night    day (begin)

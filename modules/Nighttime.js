@@ -4,8 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { extension } = Me.imports.modules.Global;
-const { Base } = Me.imports.modules;
+const { Base, Global } = Me.imports.modules;
 
 
 /**
@@ -32,7 +31,7 @@ var Module = class Module extends Base.Module {
     }
 
     onEnabled() {
-        let settings = extension.settings;
+        let settings = Global.extension.settings;
 
         this.begin = settings.get_uint('nighttime-begin');
         this.end = settings.get_uint('nighttime-end');
@@ -49,7 +48,7 @@ var Module = class Module extends Base.Module {
     }
 
     onDisabled() {
-        let settings = extension.settings;
+        let settings = Global.extension.settings;
 
         // Disconnect all the signals connected in `this.onEnabled`
         for (const id of this._signalIds) {

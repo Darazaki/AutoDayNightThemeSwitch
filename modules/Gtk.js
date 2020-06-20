@@ -4,8 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { extension } = Me.imports.modules.Global;
-const { Base } = Me.imports.modules;
+const { Base, Global } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -37,12 +36,12 @@ var Module = class Module extends Base.Module {
     }
 
     onEnabled() {
-        this.day = extension.settings.get_string('day-theme');
-        this.night = extension.settings.get_string('night-theme');
+        this.day = Global.extension.settings.get_string('day-theme');
+        this.night = Global.extension.settings.get_string('night-theme');
 
         this._signalIds = [
-            extension.settings.connect('changed::day-theme', () => {
-                this.day = extension.settings.get_string('day-theme');
+            Global.extension.settings.connect('changed::day-theme', () => {
+                this.day = Global.extension.settings.get_string('day-theme');
                 if (this.state === State.DAY) {
                     // It's daytime
 
@@ -50,8 +49,8 @@ var Module = class Module extends Base.Module {
                     this.state = State.UNKNOWN;
                 }
             }),
-            extension.settings.connect('changed::night-theme', () => {
-                this.night = extension.settings.get_string('night-theme');
+            Global.extension.settings.connect('changed::night-theme', () => {
+                this.night = Global.extension.settings.get_string('night-theme');
                 if (this.state === State.NIGHT) {
                     // It's nighttime
 
@@ -70,12 +69,12 @@ var Module = class Module extends Base.Module {
         this._gtkSignalId = this.gtkSettings.connect('changed::gtk-theme', () => {
             let newTheme = this.gtkSettings.get_string('gtk-theme');
 
-            if (extension.time.isNighttime()) {
+            if (Global.extension.timeCheck.isNighttime()) {
                 if (newTheme !== this.night) {
-                    extension.settings.set_string('night-theme', newTheme);
+                    Global.extension.settings.set_string('night-theme', newTheme);
                 }
             } else if (newTheme !== this.day) {
-                extension.settings.set_string('day-theme', newTheme);
+                Global.extension.settings.set_string('day-theme', newTheme);
             }
         });
     }
@@ -83,7 +82,7 @@ var Module = class Module extends Base.Module {
     onDisabled() {
         // Disconnect signals
         for (const id of this._signalIds) {
-            this.extension.settings.disconnect(id);
+            this.Global.extension.settings.disconnect(id);
         }
 
         this.gtkSettings.disconnect(this._gtkSignalId);

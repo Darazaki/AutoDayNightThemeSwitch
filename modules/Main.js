@@ -4,7 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Gtk, Nighttime, TimeCheck } = Me.imports.modules;
+const { Base, Global, Gtk, Nighttime, TimeCheck } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
