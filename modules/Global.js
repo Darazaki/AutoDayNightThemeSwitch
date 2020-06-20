@@ -3,7 +3,7 @@
 
 
 /** The main extension module (see: `Main.Module`) */
-var extension = null;
+var extension;
 
 
 /** The state of a module */
