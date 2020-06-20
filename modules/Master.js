@@ -9,7 +9,7 @@ const { Gio } = imports.gi;
 
 
 /**
- * Main extension module
+ * Master extension module
  *
  * Contains, creates and manages the activation every other module
  */

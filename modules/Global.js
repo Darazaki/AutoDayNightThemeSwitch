@@ -2,7 +2,7 @@
 'use strict';
 
 
-/** The main extension module (see: `Main.Module`) */
+/** The main extension module (see: `Master.Module`) */
 var extension;
 
 

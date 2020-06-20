@@ -3,12 +3,12 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Global, Main } = Me.imports.modules;
+const { Global, Master } = Me.imports.modules;
 
 
 /** Called automatically when the extension is initialized */
 function init() {
-    Global.extension = new Main.Module();
+    Global.extension = new Master.Module();
 }
 
 
