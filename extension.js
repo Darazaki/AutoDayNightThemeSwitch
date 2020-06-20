@@ -291,7 +291,10 @@ class TimeCheckModule extends Module {
     startClock() {
         this._id = MainLoop.timeout_add(
             this.period,
-            this.applyCurrentState,
+            () => {
+                this.applyCurrentState();
+                return true /* continue to check the time */;
+            },
             null /* no extra data to be passed */,
         );
     }
@@ -309,8 +312,6 @@ class TimeCheckModule extends Module {
         for (const mod of this.modules) {
             mod.state = state;
         }
-
-        return true /* continue to check the time */;
     }
 
     /**
