@@ -42,20 +42,20 @@ var Module = class Module extends Base.Module {
         this._signalIds = [
             Global.extension.settings.connect('changed::day-theme', () => {
                 this.day = Global.extension.settings.get_string('day-theme');
-                if (this.state === State.DAY) {
+                if (this.state === Global.State.DAY) {
                     // It's daytime
 
                     // This will set the new theme after a certain amount of time
-                    this.state = State.UNKNOWN;
+                    this.state = Global.State.UNKNOWN;
                 }
             }),
             Global.extension.settings.connect('changed::night-theme', () => {
                 this.night = Global.extension.settings.get_string('night-theme');
-                if (this.state === State.NIGHT) {
+                if (this.state === Global.State.NIGHT) {
                     // It's nighttime
 
                     // This will set the new theme after a certain amount of time
-                    this.state = State.UNKNOWN;
+                    this.state = Global.State.UNKNOWN;
                 }
             }),
         ];
