@@ -13,7 +13,7 @@ const { Gio } = imports.gi;
  *
  * Contains, creates and manages the activation every other module
  */
-class Module extends Base.Module {
+var Module = class Module extends Base.Module {
     constructor() {
         super();
 
@@ -61,4 +61,4 @@ class Module extends Base.Module {
         this.settings.destroy();
         this.settings = undefined;
     }
-}
+};

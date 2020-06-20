@@ -7,7 +7,7 @@ var extension = null;
 
 
 /** The state of a module */
-const State = {
+var State = {
     UNKNOWN: 0,
     DAY: 1,
     NIGHT: 2,

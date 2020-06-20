@@ -14,7 +14,7 @@ const MainLoop = imports.mainloop;
  *
  * Set the state of modules depending on the time of the day
  */
-class Module extends Base.Module {
+var Module = class Module extends Base.Module {
     /**
      * @param {Array<Base.Module>} modules Modules who's states are managed here
      */
@@ -125,4 +125,4 @@ class Module extends Base.Module {
 
         return result;
     }
-}
+};

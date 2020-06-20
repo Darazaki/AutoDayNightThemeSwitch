@@ -14,7 +14,7 @@ const { Base } = Me.imports.modules;
  * Use the values in the extension's settings to describe if it's currently
  * nighttime
  */
-class Module extends Base.Module {
+var Module = class Module extends Base.Module {
     constructor() {
         super();
 
@@ -61,4 +61,4 @@ class Module extends Base.Module {
         this.begin = undefined;
         this.end = undefined;
     }
-}
+};

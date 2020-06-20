@@ -8,7 +8,7 @@ const { State } = Me.imports.modules.Global;
 
 
 /** Something managed by this extension */
-class Module {
+var Module = class Module {
     constructor() {
         // Private:
 
@@ -79,4 +79,4 @@ class Module {
             this._enabled = true;
         }
     }
-}
+};

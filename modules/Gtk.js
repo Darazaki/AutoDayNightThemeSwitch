@@ -15,7 +15,7 @@ const { Gio } = imports.gi;
  * The main extension module `extension` is required to be defined before a
  * `GtkModule` can be created
  */
-class Module extends Base.Module {
+var Module = class Module extends Base.Module {
     constructor() {
         super();
 
@@ -113,4 +113,4 @@ class Module extends Base.Module {
     setTheme(theme) {
         this.gtkSettings.set_string('gtk-theme', theme);
     }
-}
+};
