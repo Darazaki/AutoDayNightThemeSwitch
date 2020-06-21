@@ -67,7 +67,7 @@ var Module = class Module extends Base.Module {
         // Update the extension's current GTK theme settings settings when the
         // GTK theme gets changed
         this._gtkSignalId = this.gtkSettings.connect('changed::gtk-theme', () => {
-            let newTheme = this.gtkSettings.get_string('gtk-theme');
+            const newTheme = this.gtkSettings.get_string('gtk-theme');
 
             if (Global.extension.timeCheck.isNighttime()) {
                 if (newTheme !== this.night) {

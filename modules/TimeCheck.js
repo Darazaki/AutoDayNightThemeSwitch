@@ -80,7 +80,7 @@ var Module = class Module extends Base.Module {
     /** Apply current state to each module in `this.modules` */
     applyCurrentState() {
         // Current state
-        let state = this.isNighttime() ? Global.State.NIGHT : Global.State.DAY;
+        const state = this.isNighttime() ? Global.State.NIGHT : Global.State.DAY;
 
         // Set current state for each module (disabled modules are ignored)
         for (const mod of this.modules) {
@@ -94,13 +94,13 @@ var Module = class Module extends Base.Module {
      * @returns {boolean} Is it nighttime?
      */
     isNighttime() {
-        let now = new Date();
+        const now = new Date();
         // Minutes elapsed since midnight
-        let minutesInDay = now.getHours() * 60 + now.getMinutes();
+        const minutesInDay = now.getHours() * 60 + now.getMinutes();
+        // Nighttime module
+        const nighttime = Global.extension.nighttime;
         // Is it nighttime?
         let result = false;
-        // Nighttime module
-        let nighttime = Global.extension.nighttime;
 
         if (nighttime.begin < nighttime.end) {
             //   day (end)    night    day (begin)

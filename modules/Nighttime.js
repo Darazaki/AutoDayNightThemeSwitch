@@ -31,7 +31,7 @@ var Module = class Module extends Base.Module {
     }
 
     onEnabled() {
-        let settings = Global.extension.settings;
+        const settings = Global.extension.settings;
 
         this.begin = settings.get_uint('nighttime-begin');
         this.end = settings.get_uint('nighttime-end');
@@ -48,7 +48,7 @@ var Module = class Module extends Base.Module {
     }
 
     onDisabled() {
-        let settings = Global.extension.settings;
+        const settings = Global.extension.settings;
 
         // Disconnect all the signals connected in `this.onEnabled`
         for (const id of this._signalIds) {

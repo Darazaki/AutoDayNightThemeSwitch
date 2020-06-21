@@ -37,7 +37,7 @@ var Module = class Module extends Base.Module {
     }
 
     onEnabled() {
-        let schema = Gio.SettingsSchemaSource.new_from_directory(
+        const schema = Gio.SettingsSchemaSource.new_from_directory(
             Me.dir.get_child('schemas').get_path(),
             Gio.SettingsSchemaSource.get_default(),
             false /* non-trusted ("gschemas.compiled" might be corrupted) */,
