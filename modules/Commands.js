@@ -5,7 +5,6 @@
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const { Base, Global } = Me.imports.modules;
-const { Glib } = imports.gi;
 
 
 /**
