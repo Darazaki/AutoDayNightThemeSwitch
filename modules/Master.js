@@ -24,7 +24,7 @@ var Module = class Module extends Base.Module {
         /** GTK Themes module */
         this.gtk = new Gtk.Module();
         /** Command execution module */
-        this.commands = new Commands();
+        this.commands = new Commands.Module();
         /** Time check module */
         this.timeCheck = new TimeCheck.Module(this.gtk);
         /** Nighttime module */
