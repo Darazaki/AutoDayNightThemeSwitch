@@ -35,9 +35,7 @@ function runCommand(command) {
             null /* inherit environment variables */,
             GLib.SpawnFlags.DEFAULT,
             null /* nothing to execute before */,
-            null /* no extra data to pass */,
-            null /* no error handler */,
-        );
+        )[0 /* -> could be spawned? */];
     } else {
         // Either commands are disabled so trying to run one should always fail
         // or there is no command to execute so it should also fail
