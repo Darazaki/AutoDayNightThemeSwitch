@@ -26,7 +26,7 @@ var Module = class Module extends Base.Module {
         /** Command execution module */
         this.commands = new Commands.Module();
         /** Time check module */
-        this.timeCheck = new TimeCheck.Module(this.gtk);
+        this.timeCheck = new TimeCheck.Module(this.gtk, this.commands);
         /** Nighttime module */
         this.nighttime = new Nighttime.Module();
 
