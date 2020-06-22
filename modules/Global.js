@@ -2,6 +2,10 @@
 'use strict';
 
 
+// Imports:
+const { GLib } = imports.gi;
+
+
 /** The main extension module (see: `Master.Module`) */
 var extension;
 
