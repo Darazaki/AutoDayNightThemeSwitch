@@ -74,7 +74,7 @@ function buildNighttimeRow(title, settingsId, settings) {
     spinHours.connect(
         'value-changed',
         (spinHours) => {
-            const hours = spinHours.get_value() | 0;
+            let hours = spinHours.get_value() | 0;
 
             // In order to enable looping:
             // If the user tries incrementing the hours when it's already at its
