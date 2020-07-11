@@ -4,7 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Commands, Global, Gtk, Nighttime, TimeCheck } = Me.imports.modules;
+const { Base, Commands, Global, Gtk, Nighttime, Shell, TimeCheck } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -25,8 +25,14 @@ var Module = class Module extends Base.Module {
         this.gtk = new Gtk.Module();
         /** Command execution module */
         this.commands = new Commands.Module();
+        /** Shell Themes module */
+        this.shell = new Shell.Module();
         /** Time check module */
-        this.timeCheck = new TimeCheck.Module(this.gtk, this.commands);
+        this.timeCheck = new TimeCheck.Module(
+            this.commands,
+            this.gtk,
+            this.shell,
+        );
         /** Nighttime module */
         this.nighttime = new Nighttime.Module();
 
@@ -60,8 +66,15 @@ var Module = class Module extends Base.Module {
         // The GTK module is always enabled when the extension is enabled
         this.gtk.enabled = true;
 
-        // Optionally enable the command execution module
+        // Optionally enable the command execution and shell theming modules
         this.commands.enabled = this.settings.get_boolean('commands-enabled');
+        if (this.settings.get_boolean('shell-enabled')) {
+            // `extensionManager` needs to be ready since the User Themes needs
+            // to be loaded
+            Global.extensionManagerReady().then(() => {
+                this.shell.enabled = true;
+            });
+        }
 
         // Finally, check for nighttime
         this.nighttime.enabled = true;
@@ -78,6 +91,7 @@ var Module = class Module extends Base.Module {
         this.timeCheck.enabled = false;
         this.nighttime.enabled = false;
         this.commands.enabled = false;
+        this.shell.enabled = false;
         this.gtk.enabled = false;
 
         // Free the memory
