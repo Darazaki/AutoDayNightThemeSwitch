@@ -43,19 +43,19 @@ function init() { }
 function buildNighttimeRow(title, settingsId, settings) {
     // ROW TITLE
 
-    let labelTitle = new Gtk.Label({
+    const labelTitle = new Gtk.Label({
         label: title,
         visible: true,
     });
 
     // ENTRIES
 
-    let spinHours = new Gtk.SpinButton({
+    const spinHours = new Gtk.SpinButton({
         visible: true,
         hexpand: true,
     });
 
-    let spinMinutes = new Gtk.SpinButton({
+    const spinMinutes = new Gtk.SpinButton({
         visible: true,
         hexpand: true,
     });
@@ -64,7 +64,7 @@ function buildNighttimeRow(title, settingsId, settings) {
     // is being built
     // The `| 0` part is just here to make type checking easier but doesn't
     // actually do anything in that context (same goes with later uses)
-    let initialValue = settings.get_uint(settingsId) | 0;
+    const initialValue = settings.get_uint(settingsId) | 0;
 
     // The range should be (min - step, max + step) in order to make a looping
     // spinner
@@ -129,7 +129,7 @@ function buildNighttimeRow(title, settingsId, settings) {
 
     // HOURS/MINUTES SEPARATOR
 
-    let labelSeparator = new Gtk.Label({
+    const labelSeparator = new Gtk.Label({
         label: ':',
         visible: true,
     });
@@ -150,16 +150,12 @@ function buildPrefsWidget() {
         false
     );
 
-    let settings = new Gio.Settings({
+    const settings = new Gio.Settings({
         settings_schema: schema.lookup(
             'org.gnome.shell.extensions.adnts@n.darazaki', true)
     });
 
-    // The current line inside the grid, solves a lot of pain when adding
-    // widgets
-    let line = 0;
-
-    let prefWidget = new Gtk.Grid({
+    const prefWidget = new Gtk.Grid({
         margin: 18,
         column_spacing: 12,
         row_spacing: 12,
@@ -167,9 +163,13 @@ function buildPrefsWidget() {
         expand: true,
     });
 
+    // The current line inside the grid, solves a lot of pain when adding
+    // widgets
+    let line = 0;
+
     // THEMES HEADER
 
-    let titleThemes = new Gtk.Label({
+    const titleThemes = new Gtk.Label({
         label: '<b>' + _('Day/Night GTK Themes') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
@@ -181,13 +181,13 @@ function buildPrefsWidget() {
 
     // THEME DAY
 
-    let labelThemeDay = new Gtk.Label({
+    const labelThemeDay = new Gtk.Label({
         label: _('Day Theme'),
         visible: true,
     });
     prefWidget.attach(labelThemeDay, 0, line, 1, 1);
 
-    let entryThemeDay = new Gtk.Entry({
+    const entryThemeDay = new Gtk.Entry({
         text: settings.get_string('day-theme'),
         visible: true,
         hexpand: true,
@@ -204,13 +204,13 @@ function buildPrefsWidget() {
 
     // THEME NIGHT
 
-    let labelThemeNight = new Gtk.Label({
+    const labelThemeNight = new Gtk.Label({
         label: _('Night Theme'),
         visible: true,
     });
     prefWidget.attach(labelThemeNight, 0, line, 1, 1);
 
-    let entryThemeNight = new Gtk.Entry({
+    const entryThemeNight = new Gtk.Entry({
         text: settings.get_string('night-theme'),
         visible: true,
         hexpand: true,
@@ -235,7 +235,7 @@ function buildPrefsWidget() {
 
     // NIGHTTIME HEADER
 
-    let titleNighttime = new Gtk.Label({
+    const titleNighttime = new Gtk.Label({
         label: '<b>' + _('Nighttime (24h format)') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
@@ -247,12 +247,12 @@ function buildPrefsWidget() {
 
     // NIGHTTIME BEGIN
 
-    let nighttimeRowBegin = buildNighttimeRow(
+    const nighttimeRowBegin = buildNighttimeRow(
         _('Start of Nighttime'),
         'nighttime-begin',
         settings,
     );
-    let nighttimeRowBeginLength = nighttimeRowBegin.length;
+    const nighttimeRowBeginLength = nighttimeRowBegin.length;
     for (let i = 0; i < nighttimeRowBeginLength; ++i) {
         prefWidget.attach(nighttimeRowBegin[i], i, line, 1, 1);
     }
@@ -261,12 +261,12 @@ function buildPrefsWidget() {
 
     // NIGHTTIME END
 
-    let nighttimeRowEnd = buildNighttimeRow(
+    const nighttimeRowEnd = buildNighttimeRow(
         _('End of Nighttime'),
         'nighttime-end',
         settings,
     );
-    let nighttimeRowEndLength = nighttimeRowEnd.length;
+    const nighttimeRowEndLength = nighttimeRowEnd.length;
     for (let i = 0; i < nighttimeRowEndLength; ++i) {
         prefWidget.attach(nighttimeRowEnd[i], i, line, 1, 1);
     }
@@ -285,7 +285,7 @@ function buildPrefsWidget() {
     if (canChangeShellTheme) {
         // SHELL THEMES HEADER
 
-        let titleShellThemes = new Gtk.Label({
+        const titleShellThemes = new Gtk.Label({
             label: '<b>' + _('Day/Night Shell Themes') + '</b>',
             halign: Gtk.Align.START,
             use_markup: true,
@@ -293,7 +293,7 @@ function buildPrefsWidget() {
         });
         prefWidget.attach(titleShellThemes, 0, line, 3, 1);
 
-        let switchShellTheme = new Gtk.Switch({
+        const switchShellTheme = new Gtk.Switch({
             active: settings.get_boolean('shell-enabled'),
             visible: true,
             halign: Gtk.Align.END,
@@ -310,13 +310,13 @@ function buildPrefsWidget() {
 
         // SHELL THEME DAY
 
-        let labelShellThemeDay = new Gtk.Label({
+        const labelShellThemeDay = new Gtk.Label({
             label: _('Day Theme'),
             visible: true,
         });
         prefWidget.attach(labelShellThemeDay, 0, line, 1, 1);
 
-        let entryShellThemeDay = new Gtk.Entry({
+        const entryShellThemeDay = new Gtk.Entry({
             text: settings.get_string('day-shell'),
             visible: true,
             hexpand: true,
@@ -333,13 +333,13 @@ function buildPrefsWidget() {
 
         // SHELL THEME NIGHT
 
-        let labelShellThemeNight = new Gtk.Label({
+        const labelShellThemeNight = new Gtk.Label({
             label: _('Night Theme'),
             visible: true,
         });
         prefWidget.attach(labelShellThemeNight, 0, line, 1, 1);
 
-        let entryShellThemeNight = new Gtk.Entry({
+        const entryShellThemeNight = new Gtk.Entry({
             text: settings.get_string('night-shell'),
             visible: true,
             hexpand: true,
@@ -365,7 +365,7 @@ function buildPrefsWidget() {
 
     // COMMANDS HEADER
 
-    let titleCommands = new Gtk.Label({
+    const titleCommands = new Gtk.Label({
         label: '<b>' + _('Day/Night Commands (executed with /bin/sh)') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
@@ -373,7 +373,7 @@ function buildPrefsWidget() {
     });
     prefWidget.attach(titleCommands, 0, line, 3, 1);
 
-    let switchCommands = new Gtk.Switch({
+    const switchCommands = new Gtk.Switch({
         active: settings.get_boolean('commands-enabled'),
         visible: true,
         halign: Gtk.Align.END,
@@ -390,13 +390,13 @@ function buildPrefsWidget() {
 
     // COMMAND DAY
 
-    let labelCommandDay = new Gtk.Label({
+    const labelCommandDay = new Gtk.Label({
         label: _('Day Command'),
         visible: true,
     });
     prefWidget.attach(labelCommandDay, 0, line, 1, 1);
 
-    let entryCommandDay = new Gtk.Entry({
+    const entryCommandDay = new Gtk.Entry({
         text: settings.get_string('day-command'),
         visible: true,
         hexpand: true,
@@ -413,13 +413,13 @@ function buildPrefsWidget() {
 
     // COMMAND NIGHT
 
-    let labelCommandNight = new Gtk.Label({
+    const labelCommandNight = new Gtk.Label({
         label: _('Night Command'),
         visible: true,
     });
     prefWidget.attach(labelCommandNight, 0, line, 1, 1);
 
-    let entryCommandNight = new Gtk.Entry({
+    const entryCommandNight = new Gtk.Entry({
         text: settings.get_string('night-command'),
         visible: true,
         hexpand: true,
@@ -444,7 +444,7 @@ function buildPrefsWidget() {
 
     // ADVANCED HEADER
 
-    let titleAdvanced = new Gtk.Label({
+    const titleAdvanced = new Gtk.Label({
         label: '<b>' + _('Advanced') + '</b>',
         halign: Gtk.Align.START,
         use_markup: true,
@@ -456,13 +456,13 @@ function buildPrefsWidget() {
 
     // TIME CHECK PERIOD
 
-    let labelCheckPeriod = new Gtk.Label({
+    const labelCheckPeriod = new Gtk.Label({
         label: _('Time Check Period (in ms)'),
         visible: true,
     });
     prefWidget.attach(labelCheckPeriod, 0, line, 1, 1);
 
-    let spinCheckPeriod = new Gtk.SpinButton({
+    const spinCheckPeriod = new Gtk.SpinButton({
         visible: true,
         hexpand: true,
     });
