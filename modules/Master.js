@@ -4,7 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Commands, Global, Gtk, Nighttime, Shell, TimeCheck } = Me.imports.modules;
+const { Base, Commands, Global, Gtk, Nighttime, Shell, Stateful, TimeCheck } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -26,7 +26,13 @@ var Module = class Module extends Base.Module {
         /** Command execution module */
         this.commands = new Commands.Module();
         /** Shell Themes module */
-        this.shell = new Shell.Module();
+        if (Global.managerInitializedName === undefined) {
+            // Shell module cannot be used without `extensionManager`, this
+            // module won't do anything
+            this.shell = new Stateful.Module();
+        } else {
+            this.shell = new Shell.Module();
+        }
         /** Time check module */
         this.timeCheck = new TimeCheck.Module(
             this.commands,
