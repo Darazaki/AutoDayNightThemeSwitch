@@ -4,8 +4,8 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
+const { Global, Stateful } = Me.imports.modules;
 const { extensionManager } = imports.ui.main;
-const { Base, Global } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -14,7 +14,7 @@ const { Gio } = imports.gi;
  * 
  * It also watches for shell theme changes 
  */
-var Module = class Module extends Base.Module {
+var Module = class Module extends Stateful.Module {
     constructor() {
         super();
 

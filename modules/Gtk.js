@@ -4,7 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Global } = Me.imports.modules;
+const { Global, Stateful } = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -14,7 +14,7 @@ const { Gio } = imports.gi;
  * The main extension module `extension` is required to be defined before a
  * `GtkModule` can be created
  */
-var Module = class Module extends Base.Module {
+var Module = class Module extends Stateful.Module {
     constructor() {
         super();
 

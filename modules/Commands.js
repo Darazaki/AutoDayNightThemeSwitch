@@ -4,7 +4,7 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Global } = Me.imports.modules;
+const { Global, Stateful } = Me.imports.modules;
 
 
 /**
@@ -16,7 +16,7 @@ const { Base, Global } = Me.imports.modules;
  * a new execution on a day/night command edit since this could lead to
  * unfinished commands being executed
  */
-var Module = class Module extends Base.Module {
+var Module = class Module extends Stateful.Module {
     constructor() {
         super();
 
