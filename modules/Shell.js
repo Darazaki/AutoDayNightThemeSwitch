@@ -159,7 +159,7 @@ var Module = class Module extends Stateful.Module {
             return /* undefined */;
         }
 
-        const schemaDir = extension.dir.get_child('schema');
+        const schemaDir = extension.dir.get_child('schemas');
 
         let schema;
         if (schemaDir.query_exist(null)) {
