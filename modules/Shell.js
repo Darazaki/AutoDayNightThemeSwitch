@@ -166,7 +166,7 @@ var Module = class Module extends Stateful.Module {
             schema = Gio.SettingsSchemaSource.new_from_directory(
                 schemaDir.get_path(),
                 Gio.SettingsSchemaSource.get_default(),
-                false,
+                false /* non-trusted ("gschemas.compiled" might be corrupted) */,
             );
         } else {
             schema = Gio.SettingsSchemaSource.get_default();
@@ -175,7 +175,7 @@ var Module = class Module extends Stateful.Module {
         return new Gio.Settings({
             settings_schema: schema.lookup(
                 'org.gnome.shell.extensions.user-theme',
-                true,
+                true /* recursive lookup */,
             ),
         });
     }
