@@ -139,6 +139,17 @@ var Module = class Module extends Stateful.Module {
      * @param {string} name The new theme's name 
      */
     setTheme(name) {
+        // Check if initialization failed and re-attempt it just in case
+        if (this._userThemesSettings === undefined) {
+            this.onEnabled();
+
+            if (this._userThemesSettings === undefined) {
+                // Failed again, let's fail silently and try again later
+                this.state = Global.State.UNKNOWN;
+                return;
+            }
+        }
+
         this._userThemesSettings.set_string('name', name);
     }
 
