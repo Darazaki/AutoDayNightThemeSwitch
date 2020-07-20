@@ -173,7 +173,7 @@ var Module = class Module extends Stateful.Module {
         const schemaDir = extension.dir.get_child('schemas');
 
         let schema;
-        if (schemaDir.query_exist(null)) {
+        if (schemaDir.query_exists(null)) {
             schema = Gio.SettingsSchemaSource.new_from_directory(
                 schemaDir.get_path(),
                 Gio.SettingsSchemaSource.get_default(),
