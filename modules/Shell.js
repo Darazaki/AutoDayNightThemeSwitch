@@ -77,10 +77,17 @@ var Module = class Module extends Stateful.Module {
                 // the current state
                 switch (this.state) {
                     case Global.State.DAY:
-                        settings.set_string('day-shell', newTheme);
+                        // Prevent the different theme changed signals from
+                        // calling each other recusively
+                        if (this.day !== newTheme) {
+                            settings.set_string('day-shell', newTheme);
+                        }
                         break;
                     case Global.State.NIGHT:
-                        settings.set_string('night-shell', newTheme);
+                        // Same as above
+                        if (this.night !== newTheme) {
+                            settings.set_string('night-shell', newTheme);
+                        }
                         break;
                     default:
                         // If there's no known state then it either means:
