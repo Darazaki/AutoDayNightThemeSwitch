@@ -59,7 +59,7 @@ var Module = class Module extends Stateful.Module {
                 }
             }),
             settings.connect('changed::night-shell', () => {
-                this.day = settings.get_string('night-shell');
+                this.night = settings.get_string('night-shell');
 
                 if (this.state === Global.State.NIGHT) {
                     // Set the theme after a while
@@ -109,7 +109,7 @@ var Module = class Module extends Stateful.Module {
         const extensionSettings = Global.extension.settings;
 
         // Disconnect signals
-        this._userThemesSignalId.disconnect(this._userThemesSignalId);
+        this._userThemesSettings.disconnect(this._userThemesSignalId);
         for (const id of this._signalIds) {
             extensionSettings.disconnect(id);
         }
