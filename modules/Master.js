@@ -101,7 +101,6 @@ var Module = class Module extends Base.Module {
         this.gtk.enabled = false;
 
         // Free the memory
-        this.settings.destroy();
         this.settings = undefined;
     }
 };

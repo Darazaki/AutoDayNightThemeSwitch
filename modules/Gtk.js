@@ -82,13 +82,12 @@ var Module = class Module extends Stateful.Module {
     onDisabled() {
         // Disconnect signals
         for (const id of this._signalIds) {
-            this.Global.extension.settings.disconnect(id);
+            Global.extension.settings.disconnect(id);
         }
 
         this.gtkSettings.disconnect(this._gtkSignalId);
 
         // Free memory
-        this.gtkSettings.destroy();
         this.gtkSettings = undefined;
         this.day = undefined;
         this.night = undefined;

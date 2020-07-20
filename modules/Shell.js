@@ -121,9 +121,6 @@ var Module = class Module extends Stateful.Module {
             extensionSettings.disconnect(id);
         }
 
-        // Forcibly call the destructor now
-        this._userThemesSettings.destroy();
-
         // Free the memory
         this._userThemesSettings = undefined;
         this._userThemesSignalId = undefined;
