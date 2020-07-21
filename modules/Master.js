@@ -66,6 +66,11 @@ var Module = class Module extends Base.Module {
 
         // Store it so that other modules can access it
         this.firstTime = this.settings.get_boolean('first-time-user');
+
+        // It won't be the user's first time afterward
+        if (this.firstTime) {
+            this.settings.set_boolean('first-time-user', false);
+        }
         
         // Observe changes
         this._signalIds = [
