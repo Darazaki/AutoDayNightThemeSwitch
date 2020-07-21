@@ -155,5 +155,9 @@ var Module = class Module extends Stateful.Module {
                 // Just use the current theme for both day and night
                 this.day = this.night = gtkTheme;
         }
+
+        // Write the new configuration into the preferences
+        settings.set_string('day-theme', this.day);
+        settings.set_string('night-theme', this.night);
     }
 };
