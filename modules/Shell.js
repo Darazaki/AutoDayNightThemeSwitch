@@ -49,6 +49,10 @@ var Module = class Module extends Stateful.Module {
         this.day = settings.get_string('day-shell');
         this.night = settings.get_string('night-shell');
 
+        if (Global.extension.firstTime) {
+            this.firstTimeSetup();
+        }
+
         this._signalIds = [
             settings.connect('changed::day-shell', () => {
                 this.day = settings.get_string('day-shell');
@@ -193,5 +197,34 @@ var Module = class Module extends Stateful.Module {
                 true /* recursive lookup */,
             ),
         });
+    }
+
+    /**
+     * Initial configuration for the Shell module
+     *
+     * Automatically skipped if the default configuration has already been made
+     *
+     * Must be called after initialization of:
+     *
+     * - `this.day`
+     * - `this.night`
+     * - `this._userThemesSettings`
+     */
+    firstTimeSetup() {
+        const settings = Global.extension.settings;
+
+        if (this.day !== settings.get_default_value('day-shell')
+            || this.night !== settings.get_default_value('night-shell')) {
+            // This module's value have already been changed (aka. configured),
+            // skip initial configuration
+            return;
+        }
+
+        // Use the current theme as for both day and night
+        this.day = this.night = this._userThemesSettings.get_string('name');
+
+        // Actually change the settings
+        settings.set_string('day-shell', this.day);
+        settings.set_string('night-shell', this.night);
     }
 };
