@@ -48,8 +48,8 @@
       <summary>Time at which the theme should stop being the night theme (in minutes)</summary>
     </key>
     <key type="b" name="first-time-user">
-      <!-- Only false before the first launch -->
-      <default>false</default>
+      <!-- Only true before the first launch -->
+      <default>true</default>
       <summary>If it's the first time the user runs this extension</summary>
     </key>
   </schema>
