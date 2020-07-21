@@ -21,6 +21,8 @@ var Module = class Module extends Base.Module {
 
         /** Extension settings */
         this.settings = undefined;
+        /** If it's the first time the extension has been ran */
+        this.firstTime = undefined;
         /** GTK Themes module */
         this.gtk = new Gtk.Module();
         /** Command execution module */
@@ -62,6 +64,9 @@ var Module = class Module extends Base.Module {
             ),
         });
 
+        // Store it so that other modules can access it
+        this.firstTime = this.settings.get_boolean('first-time-user');
+        
         // Observe changes
         this._signalIds = [
             this.settings.connect('changed::commands-enabled', () => {
@@ -79,6 +84,11 @@ var Module = class Module extends Base.Module {
             // to be loaded
             Global.extensionManagerReady().then(() => {
                 this.shell.enabled = true;
+
+                if (this.settings.get_boolean('first-time-user')) {
+                    this._firstTimeSetup();
+                }
+
             });
         }
 
@@ -101,6 +111,7 @@ var Module = class Module extends Base.Module {
         this.gtk.enabled = false;
 
         // Free the memory
+        this.firstTime = undefined;
         this.settings = undefined;
     }
 };

@@ -39,6 +39,15 @@ var Module = class Module extends Stateful.Module {
         this.day = Global.extension.settings.get_string('day-theme');
         this.night = Global.extension.settings.get_string('night-theme');
 
+        this.gtkSettings = new Gio.Settings({
+            schema: 'org.gnome.desktop.interface',
+        });
+
+        if (Global.extension.firstTime) {
+            this.firstTimeSetup();
+        }
+
+        // Apply the changes after the extension's preferences have been edited
         this._signalIds = [
             Global.extension.settings.connect('changed::day-theme', () => {
                 this.day = Global.extension.settings.get_string('day-theme');
@@ -59,10 +68,6 @@ var Module = class Module extends Stateful.Module {
                 }
             }),
         ];
-
-        this.gtkSettings = new Gio.Settings({
-            schema: 'org.gnome.desktop.interface',
-        });
 
         // Update the extension's current GTK theme settings settings when the
         // GTK theme gets changed
@@ -110,5 +115,45 @@ var Module = class Module extends Stateful.Module {
      */
     setTheme(theme) {
         this.gtkSettings.set_string('gtk-theme', theme);
+    }
+
+    /**
+     * Initial configuration of the GTK module
+     *
+     * Skipped if the values set are already the default ones
+     *
+     * Must be called after `this.day`, `this.night` and `this.gtkSettings`
+     * have been initialized
+     */
+    firstTimeSetup() {
+        const settings = Global.extension.settings;
+
+        if (this.day !== settings.get_default_value('day-theme')
+            || this.night !== settings.get_default_value('night-theme')) {
+            // The user already configured this part, skip the initial
+            // configuration
+            return;
+        }
+
+        const gtkTheme = this.gtkSettings.get_string('gtk-theme');
+
+        // Day/night combinations for common themes
+        switch (gtkTheme) {
+            case 'Adwaita':
+            case 'Adwaita-dark':
+                this.day = 'Adwaita';
+                this.night = 'Adwaita-dark';
+                break;
+
+            case 'Pop':
+            case 'Pop-dark':
+                this.day = 'Pop';
+                this.night = 'Pop-dark';
+                break;
+
+            default:
+                // Just use the current theme for both day and night
+                this.day = this.night = gtkTheme;
+        }
     }
 };
