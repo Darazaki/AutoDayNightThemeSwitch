@@ -139,20 +139,23 @@ function buildNighttimeRow(title, settingsId, settings) {
 }
 
 
-/** Create the widget and bind its children to the actual values
+/**
+ * Create the widget and bind its children to the actual values
  *
- *  @returns {Gtk.Grid} The grid containing all the widgets
+ * @returns {Gtk.Grid} The grid containing all the widgets
  */
 function buildPrefsWidget() {
     const schema = Gio.SettingsSchemaSource.new_from_directory(
         Me.dir.get_child('schemas').get_path(),
         Gio.SettingsSchemaSource.get_default(),
-        false
+        false,
     );
 
     const settings = new Gio.Settings({
         settings_schema: schema.lookup(
-            'org.gnome.shell.extensions.adnts@n.darazaki', true)
+            'org.gnome.shell.extensions.adnts@n.darazaki',
+            true,
+        ),
     });
 
     const prefWidget = new Gtk.Grid({
@@ -473,8 +476,10 @@ function buildPrefsWidget() {
     spinCheckPeriod.connect(
         'value-changed',
         (spinCheckPeriod) => {
-            settings.set_uint('time-check-period',
-                spinCheckPeriod.get_value());
+            settings.set_uint(
+                'time-check-period',
+                spinCheckPeriod.get_value(),
+            );
         },
     );
     prefWidget.attach(spinCheckPeriod, 1, line, 3, 1);
@@ -482,3 +487,4 @@ function buildPrefsWidget() {
 
     return prefWidget;
 }
+
