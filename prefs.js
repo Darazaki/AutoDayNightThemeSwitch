@@ -140,35 +140,100 @@ function buildNighttimeRow(title, settingsId, settings) {
 
 
 /**
- * Create the widget and bind its children to the actual values
+ * Add a new tab to the `Gtk.Notebook`
  *
- * @returns {Gtk.Grid} The grid containing all the widgets
+ * @param {Gtk.Notebook} notebook The previously created notebook
+ * @param {string} name The tab's visible name
+ * @param {Gtk.Widget} content The widget shown by this new page
  */
-function buildPrefsWidget() {
-    const schema = Gio.SettingsSchemaSource.new_from_directory(
-        Me.dir.get_child('schemas').get_path(),
-        Gio.SettingsSchemaSource.get_default(),
-        false,
-    );
-
-    const settings = new Gio.Settings({
-        settings_schema: schema.lookup(
-            'org.gnome.shell.extensions.adnts@n.darazaki',
-            true,
-        ),
+function appendPage(notebook, name, content) {
+    const nameLabel = new Gtk.Label({
+        label: name,
+        visible: true,
     });
 
-    const prefWidget = new Gtk.Grid({
+    notebook.append_page(content, nameLabel);
+}
+
+
+/**
+ * @returns {Gtk.Grid} A grid widget with the default properties used here
+ */
+function buildDefaultGrid() {
+    return new Gtk.Grid({
         margin: 18,
         column_spacing: 12,
         row_spacing: 12,
         visible: true,
         expand: true,
     });
+}
 
-    // The current line inside the grid, solves a lot of pain when adding
-    // widgets
+
+/**
+ * @param {Gio.Settings} settings This extension's settings
+ *
+ * @returns {Gtk.Widget} The "Time" page's content
+ */
+function buildTimePage(settings) {
+    // Current grid's line
     let line = 0;
+    const prefWidget = buildDefaultGrid();
+
+
+    // NIGHTTIME HEADER
+
+    const titleNighttime = new Gtk.Label({
+        label: '<b>' + _('Nighttime (24h format)') + '</b>',
+        halign: Gtk.Align.START,
+        use_markup: true,
+        visible: true,
+    });
+    prefWidget.attach(titleNighttime, 0, line, 4, 1);
+
+    ++line;
+
+    // NIGHTTIME BEGIN
+
+    const nighttimeRowBegin = buildNighttimeRow(
+        _('Start of Nighttime'),
+        'nighttime-begin',
+        settings,
+    );
+    const nighttimeRowBeginLength = nighttimeRowBegin.length;
+    for (let i = 0; i < nighttimeRowBeginLength; ++i) {
+        prefWidget.attach(nighttimeRowBegin[i], i, line, 1, 1);
+    }
+
+    ++line;
+
+    // NIGHTTIME END
+
+    const nighttimeRowEnd = buildNighttimeRow(
+        _('End of Nighttime'),
+        'nighttime-end',
+        settings,
+    );
+    const nighttimeRowEndLength = nighttimeRowEnd.length;
+    for (let i = 0; i < nighttimeRowEndLength; ++i) {
+        prefWidget.attach(nighttimeRowEnd[i], i, line, 1, 1);
+    }
+
+
+    return prefWidget;
+}
+
+
+/**
+ * @param {Gio.Settings} settings This extension's settings
+ *
+ * @returns {Gtk.Widget} The "Themes" page's content
+ */
+function buildThemesPage(settings) {
+    // Current grid's line
+    let line = 0;
+    const prefWidget = buildDefaultGrid();
+
 
     // THEMES HEADER
 
@@ -226,66 +291,18 @@ function buildPrefsWidget() {
         Gio.SettingsBindFlags.DEFAULT,
     );
 
-    ++line;
-
-    // SEPARATOR
-
-    prefWidget.attach(new Gtk.HSeparator({
-        visible: true,
-    }), 0, line, 4, 1);
-
-    ++line;
-
-    // NIGHTTIME HEADER
-
-    const titleNighttime = new Gtk.Label({
-        label: '<b>' + _('Nighttime (24h format)') + '</b>',
-        halign: Gtk.Align.START,
-        use_markup: true,
-        visible: true,
-    });
-    prefWidget.attach(titleNighttime, 0, line, 4, 1);
-
-    ++line;
-
-    // NIGHTTIME BEGIN
-
-    const nighttimeRowBegin = buildNighttimeRow(
-        _('Start of Nighttime'),
-        'nighttime-begin',
-        settings,
-    );
-    const nighttimeRowBeginLength = nighttimeRowBegin.length;
-    for (let i = 0; i < nighttimeRowBeginLength; ++i) {
-        prefWidget.attach(nighttimeRowBegin[i], i, line, 1, 1);
-    }
-
-    ++line;
-
-    // NIGHTTIME END
-
-    const nighttimeRowEnd = buildNighttimeRow(
-        _('End of Nighttime'),
-        'nighttime-end',
-        settings,
-    );
-    const nighttimeRowEndLength = nighttimeRowEnd.length;
-    for (let i = 0; i < nighttimeRowEndLength; ++i) {
-        prefWidget.attach(nighttimeRowEnd[i], i, line, 1, 1);
-    }
-
-    ++line;
-
-    // SEPARATOR
-
-    prefWidget.attach(new Gtk.HSeparator({
-        visible: true,
-    }), 0, line, 4, 1);
-
-    ++line;
-
     // Don't show shell theme settings if they can't be used
     if (canChangeShellTheme) {
+        ++line;
+
+        // SEPARATOR
+
+        prefWidget.attach(new Gtk.HSeparator({
+            visible: true,
+        }), 0, line, 4, 1);
+
+        ++line;
+
         // SHELL THEMES HEADER
 
         const titleShellThemes = new Gtk.Label({
@@ -354,17 +371,23 @@ function buildPrefsWidget() {
             'text',
             Gio.SettingsBindFlags.DEFAULT,
         );
-
-        ++line;
-
-        // SEPARATOR
-
-        prefWidget.attach(new Gtk.HSeparator({
-            visible: true,
-        }), 0, line, 4, 1);
-
-        ++line;
     }
+
+
+    return prefWidget;
+}
+
+
+/**
+ * @param {Gio.Settings} settings This extension's settings
+ *
+ * @returns {Gtk.Widget} The "Extra" page's content
+ */
+function buildExtraPage(settings) {
+    // Current grid's line
+    let line = 0;
+    const prefWidget = buildDefaultGrid();
+
 
     // COMMANDS HEADER
 
@@ -435,15 +458,21 @@ function buildPrefsWidget() {
         Gio.SettingsBindFlags.DEFAULT,
     );
 
-    ++line;
 
-    // SEPARATOR
+    return prefWidget;
+}
 
-    prefWidget.attach(new Gtk.HSeparator({
-        visible: true,
-    }), 0, line, 4, 1);
 
-    ++line;
+/**
+ * @param {Gio.Settings} settings This extension's settings
+ *
+ * @returns {Gtk.Widget} The "Advanced" page's content
+ */
+function buildAdvancedPage(settings) {
+    // Current grid's line
+    let line = 0;
+    const prefWidget = buildDefaultGrid();
+
 
     // ADVANCED HEADER
 
@@ -483,6 +512,42 @@ function buildPrefsWidget() {
         },
     );
     prefWidget.attach(spinCheckPeriod, 1, line, 3, 1);
+
+
+    return prefWidget;
+}
+
+
+
+/**
+ * Create the widget and bind its children to the actual values
+ *
+ * @returns {Gtk.Widget} The widget containing all the other widgets
+ */
+function buildPrefsWidget() {
+    const schema = Gio.SettingsSchemaSource.new_from_directory(
+        Me.dir.get_child('schemas').get_path(),
+        Gio.SettingsSchemaSource.get_default(),
+        false,
+    );
+
+    const settings = new Gio.Settings({
+        settings_schema: schema.lookup(
+            'org.gnome.shell.extensions.adnts@n.darazaki',
+            true,
+        ),
+    });
+
+    const prefWidget = new Gtk.Notebook({
+        visible: true,
+    });
+
+
+    // Create and append all the pages
+    appendPage(prefWidget, _("Time"), buildTimePage(settings));
+    appendPage(prefWidget, _("Themes"), buildThemesPage(settings));
+    appendPage(prefWidget, _("Extra"), buildExtraPage(settings));
+    appendPage(prefWidget, _("Advanced"), buildAdvancedPage(settings));
 
 
     return prefWidget;
