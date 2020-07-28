@@ -228,3 +228,4 @@ var Module = class Module extends Stateful.Module {
         settings.set_string('night-shell', this.night);
     }
 };
+

@@ -61,3 +61,4 @@ var Module = class Module extends Base.Module {
         this.end = undefined;
     }
 };
+

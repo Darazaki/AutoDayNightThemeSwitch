@@ -161,3 +161,4 @@ var Module = class Module extends Stateful.Module {
         settings.set_string('night-theme', this.night);
     }
 };
+

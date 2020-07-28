@@ -25,3 +25,4 @@ function enable() {
 function disable() {
     Global.extension.enabled = false;
 }
+

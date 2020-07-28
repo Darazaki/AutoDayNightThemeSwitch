@@ -120,3 +120,4 @@ var Module = class Module extends Base.Module {
         this.settings = undefined;
     }
 };
+

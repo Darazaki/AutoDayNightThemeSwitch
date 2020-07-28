@@ -70,4 +70,5 @@ var Module = class Module extends Stateful.Module {
     onNightStateSet() {
         Global.runCommand(this.night);
     }
-}
+};
+
