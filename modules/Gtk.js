@@ -128,8 +128,9 @@ var Module = class Module extends Stateful.Module {
     firstTimeSetup() {
         const settings = Global.extension.settings;
 
-        if (this.day !== settings.get_default_value('day-theme')
-            || this.night !== settings.get_default_value('night-theme')) {
+        const defaultDay = settings.get_default_value('day-theme').unpack();
+        const defaultNight = settings.get_default_value('night-theme').unpack();
+        if (this.day !== defaultDay || this.night !== defaultNight)) {
             // The user already configured this part, skip the initial
             // configuration
             return;

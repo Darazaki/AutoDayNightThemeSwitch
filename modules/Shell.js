@@ -213,8 +213,9 @@ var Module = class Module extends Stateful.Module {
     firstTimeSetup() {
         const settings = Global.extension.settings;
 
-        if (this.day !== settings.get_default_value('day-shell')
-            || this.night !== settings.get_default_value('night-shell')) {
+        const defaultDay = settings.get_default_value('day-shell').unpack();
+        const defaultNight = settings.get_default_value('night-shell').unpack();
+        if (this.day !== defaultDay || this.night !== defaultNight) {
             // This module's value have already been changed (aka. configured),
             // skip initial configuration
             return;
