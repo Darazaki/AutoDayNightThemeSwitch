@@ -54,6 +54,15 @@ let gnomeSettings = null;
  */
 let shellSettings = null;
 
+/** This extension's settings' connected signal ids */
+let extensionSignalIds = [];
+
+/** GNOME's connected signal id */
+let gnomeSignalId = null;
+
+/** User Themes' connect signal id */
+let shellSignalId = null;
+
 
 // VALUES TAKEN FROM SETTINGS (BEGIN)
 // The following values do not have any impact on the program and are just there
@@ -117,113 +126,114 @@ function setupExtensionSettings() {
     timeCheckPeriod = extensionSettings.get_uint('time-check-period');
 
 
-    // Watch for changes
+    // Watch for changes and store the ids
 
+    extensionSignalIds = [
+        // DAY THEMES
+        extensionSettings.connect('changed::day-theme', function () {
+            gtk.day = extensionSettings.get_string('day-theme');
+            if (gtk.state === State.DAY) {
+                // It's daytime
 
-    // DAY THEMES
-    extensionSettings.connect('changed::day-theme', function () {
-        gtk.day = extensionSettings.get_string('day-theme');
-        if (gtk.state === State.DAY) {
-            // It's daytime
+                // This will set the new theme after a certain amount of time,
+                // it was made to avoid the lag created by `setGTKTheme`
+                gtk.state = State.UNKNOWN;
 
-            // This will set the new theme after a certain amount of time,
-            // it was made to avoid the lag created by `setGTKTheme`
-            gtk.state = State.UNKNOWN;
+                // Uncommenting `setGTKTheme` will make theme changes instantaneous
+                // but it will also make your computer lag when editing the day
+                // theme's name
 
-            // Uncommenting `setGTKTheme` will make theme changes instantaneous
-            // but it will also make your computer lag when editing the day
-            // theme's name
+                //setGTKTheme(theme.day);
+            }
+        }),
+        extensionSettings.connect('changed::day-shell', function () {
+            shell.day = extensionSettings.get_string('day-shell');
+            if (shell.state === State.DAY) {
+                // It's daytime
 
-            //setGTKTheme(theme.day);
-        }
-    });
-    extensionSettings.connect('changed::day-shell', function () {
-        shell.day = extensionSettings.get_string('day-shell');
-        if (shell.state === State.DAY) {
-            // It's daytime
+                // Will set the new shell theme after some time
+                shell.state = State.UNKNOWN;
+            }
+        }),
 
-            // Will set the new shell theme after some time
-            shell.state = State.UNKNOWN;
-        }
-    });
+        // NIGHT THEMES
+        extensionSettings.connect('changed::night-theme', function () {
+            gtk.night = extensionSettings.get_string('night-theme');
+            if (gtk.state === State.NIGHT) {
+                // It's nighttime
 
-    // NIGHT THEMES
-    extensionSettings.connect('changed::night-theme', function () {
-        gtk.night = extensionSettings.get_string('night-theme');
-        if (gtk.state === State.NIGHT) {
-            // It's nighttime
+                // This will set the new theme after a certain amount of time,
+                // it was made to avoid the lag created by `setGTKTheme`
+                gtk.state = State.UNKNOWN;
 
-            // This will set the new theme after a certain amount of time,
-            // it was made to avoid the lag created by `setGTKTheme`
-            gtk.state = State.UNKNOWN;
+                // Uncommenting `setGTKTheme` will make theme changes instantaneous
+                // but it will also make your computer lag when editing the night
+                // theme's name
 
-            // Uncommenting `setGTKTheme` will make theme changes instantaneous
-            // but it will also make your computer lag when editing the night
-            // theme's name
+                //setGTKTheme(theme.night);
+            }
+        }),
+        extensionSettings.connect('changed::night-shell', function () {
+            shell.night = extensionSettings.get_string('night-shell');
+            if (shell.state === State.NIGHT) {
+                // It's nighttime
 
-            //setGTKTheme(theme.night);
-        }
-    });
-    extensionSettings.connect('changed::night-shell', function () {
-        shell.night = extensionSettings.get_string('night-shell');
-        if (shell.state === State.NIGHT) {
-            // It's nighttime
+                // Will set the new shell theme after some time
+                shell.state = State.UNKNOWN;
+            }
+        }),
 
-            // Will set the new shell theme after some time
-            shell.state = State.UNKNOWN;
-        }
-    });
+        // NIGHTTIME BEGIN
+        extensionSettings.connect('changed::nighttime-begin', function () {
+            // This it automatically updated so no need for extra tweaks
+            nighttime.begin = extensionSettings.get_uint('nighttime-begin');
+        }),
 
-    // NIGHTTIME BEGIN
-    extensionSettings.connect('changed::nighttime-begin', function () {
-        // This it automatically updated so no need for extra tweaks
-        nighttime.begin = extensionSettings.get_uint('nighttime-begin');
-    });
+        // NIGHTTIME END
+        extensionSettings.connect('changed::nighttime-end', function () {
+            // This it automatically updated so no need for extra tweaks
+            nighttime.end = extensionSettings.get_uint('nighttime-end');
+        }),
 
-    // NIGHTTIME END
-    extensionSettings.connect('changed::nighttime-end', function () {
-        // This it automatically updated so no need for extra tweaks
-        nighttime.end = extensionSettings.get_uint('nighttime-end');
-    });
+        // TIME CHECK PERIOD
+        extensionSettings.connect('changed::time-check-period', function () {
+            timeCheckPeriod = extensionSettings.get_uint('time-check-period');
 
-    // TIME CHECK PERIOD
-    extensionSettings.connect('changed::time-check-period', function () {
-        timeCheckPeriod = extensionSettings.get_uint('time-check-period');
+            // Replace the period
+            MainLoop.source_remove(timeCheckId);
+            timeCheckId = MainLoop.timeout_add(timeCheckPeriod, timeCheck, null);
+        }),
 
-        // Replace the period
-        MainLoop.source_remove(timeCheckId);
-        timeCheckId = MainLoop.timeout_add(timeCheckPeriod, timeCheck, null);
-    });
+        // SHELL ENABLED
+        extensionSettings.connect('changed::shell-enabled', function () {
+            shell.enabled = extensionSettings.get_boolean('shell-enabled');
 
-    // SHELL ENABLED
-    extensionSettings.connect('changed::shell-enabled', function () {
-        shell.enabled = extensionSettings.get_boolean('shell-enabled');
+            if (shell.enabled) {
+                // Set the new theme
+                shell.state = State.UNKNOWN;
+            } else {
+                // Disable connections with User Themes' settings
+                shellSettings = null;
+            }
+        }),
 
-        if (shell.enabled) {
-            // Set the new theme
-            shell.state = State.UNKNOWN;
-        } else {
-            // Disable connections with User Themes' settings
-            shellSettings = null;
-        }
-    });
+        // Let's not run the commands on change
 
-    // Let's not run the commands on change
+        // COMMANDS ENABLED
+        extensionSettings.connect('changed::commands-enabled', function () {
+            command.enabled = extensionSettings.get_boolean('commands-enabled');
+        }),
 
-    // COMMANDS ENABLED
-    extensionSettings.connect('changed::commands-enabled', function () {
-        command.enabled = extensionSettings.get_boolean('commands-enabled');
-    });
+        // DAY COMMAND
+        extensionSettings.connect('changed::day-command', function () {
+            command.day = extensionSettings.get_string('day-command');
+        }),
 
-    // DAY COMMAND
-    extensionSettings.connect('changed::day-command', function () {
-        command.day = extensionSettings.get_string('day-command');
-    });
-
-    // NIGHT COMMAND
-    extensionSettings.connect('changed::night-command', function () {
-        command.night = extensionSettings.get_string('night-command');
-    });
+        // NIGHT COMMAND
+        extensionSettings.connect('changed::night-command', function () {
+            command.night = extensionSettings.get_string('night-command');
+        }),
+    ]
 }
 
 
@@ -238,7 +248,7 @@ function setupGNOMESettings() {
     });
 
     // Update the extension's settings when the user changes their GTK theme
-    gnomeSettings.connect('changed::gtk-theme', function () {
+    gnomeSignalId = gnomeSettings.connect('changed::gtk-theme', function () {
         let newTheme = gnomeSettings.get_string('gtk-theme');
 
         if (isNighttime()) {
@@ -294,7 +304,7 @@ function setupShellSettings() {
     });
 
     // Update the extension's settings when the user changes their shell theme
-    shellSettings.connect('changed::name', function () {
+    shellSignalId = shellSettings.connect('changed::name', function () {
         let newTheme = shellSettings.get_string('name');
 
         if (isNighttime()) {
@@ -534,28 +544,20 @@ function disable() {
 
     // Stop watching for changes in the settings
     if (extensionSettings !== null) {
-        extensionSettings.disconnect('changed::day-theme');
-        extensionSettings.disconnect('changed::day-shell');
-        extensionSettings.disconnect('changed::night-theme');
-        extensionSettings.disconnect('changed::night-shell');
-        extensionSettings.disconnect('changed::day-command');
-        extensionSettings.disconnect('changed::night-command');
-        extensionSettings.disconnect('changed::nighttime-begin');
-        extensionSettings.disconnect('changed::nighttime-end');
-        extensionSettings.disconnect('changed::time-check-period');
-        extensionSettings.disconnect('changed::shell-enabled');
-        extensionSettings.disconnect('changed::commands-enabled');
+        for (const id of extensionSignalIds) {
+            extensionSettings.disconnect(id);
+        }
 
         extensionSettings = null;
     }
 
     if (gnomeSettings !== null) {
-        gnomeSettings.disconnect('changed::gtk-theme');
+        gnomeSettings.disconnect(gnomeSignalId);
         gnomeSettings = null;
     }
 
     if (shellSettings !== null) {
-        shellSettings.disconnect('changed::name');
+        shellSettings.disconnect(shellSignalId);
         shellSettings = null;
     }
 
@@ -571,3 +573,4 @@ function disable() {
  * extension, and what it does is literally nothing
  */
 function init() { }
+
