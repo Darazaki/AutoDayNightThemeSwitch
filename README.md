@@ -5,6 +5,12 @@ day
 
 ![Beautiful banner](images/banner.png)
 
+This branch contains the "classic" version: it doesn't have all the nice
+features of the modern version but is more stable and lightweight
+
+This version isn't published on the GNOME Extensions website and can only be
+installed from this repository
+
 ## Features
 
 ![Screen pic](images/screenshot.png)
@@ -44,14 +50,14 @@ searches for extensions
 E.g. user installation:
 
 ```sh
-git clone https://github.com/Darazaki/AutoDayNightThemeSwitch adnts
+git clone https://github.com/Darazaki/AutoDayNightThemeSwitch -b classic adnts
 adnts/install.sh
 ```
 
 E.g. root installation:
 
 ```sh
-git clone https://github.com/Darazaki/AutoDayNightThemeSwitch adnts
+git clone https://github.com/Darazaki/AutoDayNightThemeSwitch -b classic adnts
 sudo adnts/install.sh /usr/share/gnome-shell/extensions
 ```
 
@@ -86,8 +92,8 @@ alternatives:
   Switcher](https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension)
   by rmnvgr
 
-> Automatically toggle between your light and dark GTK theme variants when
-> Night Light activates
+> Automatically toggle your light and dark GTK and GNOME Shell theme variants,
+> switch backgrounds and launch custom commands at sunset and sunrise
 
 - [Dark Mode
   Switcher](https://github.com/lossurdo/gnome-shell-extension-dark-mode) by
