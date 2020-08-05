@@ -127,7 +127,7 @@ var Module = class Module extends Base.Module {
                 if (this.settings.get_boolean('nighttime-from-night-light')) {
                     newModule = new Nightlight.Module();
                 } else {
-                    newModuke = new Nighttime.Module();
+                    newModule = new Nighttime.Module();
                 }
 
                 // Enable it and make sure it's ready
