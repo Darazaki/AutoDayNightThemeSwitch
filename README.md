@@ -86,8 +86,8 @@ alternatives:
   Switcher](https://gitlab.com/rmnvgr/nightthemeswitcher-gnome-shell-extension)
   by rmnvgr
 
-> Automatically toggle between your light and dark GTK theme variants when
-> Night Light activates
+> Automatically toggle your light and dark GTK and GNOME Shell theme variants,
+> switch backgrounds and launch custom commands at sunset and sunrise
 
 - [Dark Mode
   Switcher](https://github.com/lossurdo/gnome-shell-extension-dark-mode) by
