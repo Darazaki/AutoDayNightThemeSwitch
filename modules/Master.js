@@ -4,7 +4,11 @@
 
 // Imports:
 const Me = imports.misc.extensionUtils.getCurrentExtension();
-const { Base, Commands, Global, Gtk, Nighttime, Shell, Stateful, TimeCheck } = Me.imports.modules;
+const {
+    Base, Commands, Global,
+    Gtk, Nightlight, Nighttime,
+    Shell, Stateful, TimeCheck,
+} = Me.imports.modules;
 const { Gio } = imports.gi;
 
 
@@ -41,8 +45,8 @@ var Module = class Module extends Base.Module {
             this.gtk,
             this.shell,
         );
-        /** Nighttime module */
-        this.nighttime = new Nighttime.Module();
+        /** Nighttime module (init delayed) */
+        this.nighttime = undefined;
 
         // Private:
 
@@ -71,14 +75,15 @@ var Module = class Module extends Base.Module {
         if (this.firstTime) {
             this.settings.set_boolean('first-time-user', false);
         }
-        
-        // Observe changes
-        this._signalIds = [
-            this.settings.connect('changed::commands-enabled', () => {
-                this.commands.enabled = this.settings.get_boolean('commands-enabled');
-            }),
-        ];
 
+        // Choose the correct nighttime provider
+        if (this.settings.get_boolean('nighttime-from-night-light')) {
+            this.nighttime = new Nightlight.Module();
+        } else {
+            this.nighttime = new Nighttime.Module();
+        }
+        
+        
         // The GTK module is always enabled when the extension is enabled
         this.gtk.enabled = true;
 
@@ -96,6 +101,47 @@ var Module = class Module extends Base.Module {
 
             });
         }
+
+
+        // Observe changes
+        this._signalIds = [
+            this.settings.connect('changed::commands-enabled', () => {
+                this.commands.enabled =
+                    this.settings.get_boolean('commands-enabled');
+            }),
+            this.settings.connect('changed::shell-enabled', () => {
+                // Wait for the module to be ready beforehand
+                Global.extensionManagerReady().then(() => {
+                    this.shell.enabled =
+                        this.settings.get_boolean('shell-enabled');
+                });
+            }),
+            this.settings.connect('changed::nighttime-from-night-light', () => {
+                this.commands.enabled =
+                    this.settings.get_boolean('nighttime-from-night-light');
+            }),
+            this.settings.connect('changed::nighttime-from-night-light', () => {
+                let newModule;
+
+                // Initialize the new module
+                if (this.settings.get_boolean('nighttime-from-night-light')) {
+                    newModule = new Nightlight.Module();
+                } else {
+                    newModuke = new Nighttime.Module();
+                }
+
+                // Enable it and make sure it's ready
+                newModule.enabled = true;
+
+                // Store the old module to disable it later
+                const oldModule = this.nighttime;
+
+                // Finally, replace the current module and disable the old one
+                this.nighttime = newModule;
+                oldModule.enabled = false;
+            }),
+        ];
+
 
         // Finally, check for nighttime
         this.nighttime.enabled = true;
@@ -117,6 +163,7 @@ var Module = class Module extends Base.Module {
 
         // Free the memory
         this.firstTime = undefined;
+        this.nighttime = undefined;
         this.settings = undefined;
     }
 };

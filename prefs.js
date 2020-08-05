@@ -219,6 +219,39 @@ function buildTimePage(settings) {
         prefWidget.attach(nighttimeRowEnd[i], i, line, 1, 1);
     }
 
+    ++line;
+    
+    // SEPARATOR
+
+    prefWidget.attach(new Gtk.HSeparator({
+        visible: true,
+    }), 0, line, 4, 1);
+
+    ++line;
+
+    // SAME AS NIGHT LIGHT
+    
+    const labelNightLight = new Gtk.Label({
+        label: '<b>' + _('Use Night Light\'s Manual Schedule Instead') + '</b>',
+        halign: Gtk.Align.START,
+        use_markup: true,
+        visible: true,
+
+    });
+    prefWidget.attach(labelNightLight, 0, line, 3, 1);
+    const switchNightLight = new Gtk.Switch({
+        active: settings.get_boolean('nighttime-from-night-light'),
+        visible: true,
+        halign: Gtk.Align.END,
+    });
+    prefWidget.attach(switchNightLight, 3, line, 1, 1);
+    settings.bind(
+        'nighttime-from-night-light',
+        switchNightLight,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT,
+    );
+
 
     return prefWidget;
 }

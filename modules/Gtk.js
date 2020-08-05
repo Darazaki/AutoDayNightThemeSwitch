@@ -130,7 +130,7 @@ var Module = class Module extends Stateful.Module {
 
         const defaultDay = settings.get_default_value('day-theme').unpack();
         const defaultNight = settings.get_default_value('night-theme').unpack();
-        if (this.day !== defaultDay || this.night !== defaultNight)) {
+        if (this.day !== defaultDay || this.night !== defaultNight) {
             // The user already configured this part, skip the initial
             // configuration
             return;
