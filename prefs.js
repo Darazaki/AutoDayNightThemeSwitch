@@ -161,7 +161,10 @@ function appendPage(notebook, name, content) {
  */
 function buildDefaultGrid() {
     return new Gtk.Grid({
-        margin: 18,
+        margin_start: 18,
+        margin_end: 18,
+        margin_top: 18,
+        margin_bottom: 18,
         column_spacing: 12,
         row_spacing: 12,
         visible: true,
@@ -220,7 +223,7 @@ function buildTimePage(settings) {
     }
 
     ++line;
-    
+
     // SEPARATOR
 
     prefWidget.attach(new Gtk.HSeparator({
@@ -230,7 +233,7 @@ function buildTimePage(settings) {
     ++line;
 
     // SAME AS NIGHT LIGHT
-    
+
     const labelNightLight = new Gtk.Label({
         label: '<b>' + _('Use Night Light\'s Manual Schedule Instead') + '</b>',
         halign: Gtk.Align.START,
