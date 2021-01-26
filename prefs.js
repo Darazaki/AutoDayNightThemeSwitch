@@ -167,7 +167,8 @@ function buildPrefsWidget() {
         column_spacing: 12,
         row_spacing: 12,
         visible: true,
-        expand: true,
+        hexpand: true,
+        vexpand: true,
     });
 
     // THEMES HEADER
