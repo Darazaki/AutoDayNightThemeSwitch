@@ -231,7 +231,8 @@ function buildPrefsWidget() {
 
     // SEPARATOR
 
-    prefWidget.attach(new Gtk.HSeparator({
+    prefWidget.attach(new Gtk.Separator({
+        orientation: Gtk.Orientation.HORIZONTAL,
         visible: true,
     }), 0, line, 4, 1);
 
@@ -279,7 +280,8 @@ function buildPrefsWidget() {
 
     // SEPARATOR
 
-    prefWidget.attach(new Gtk.HSeparator({
+    prefWidget.attach(new Gtk.Separator({
+        orientation: Gtk.Orientation.HORIZONTAL,
         visible: true,
     }), 0, line, 4, 1);
 
@@ -360,7 +362,8 @@ function buildPrefsWidget() {
 
         // SEPARATOR
 
-        prefWidget.attach(new Gtk.HSeparator({
+        prefWidget.attach(new Gtk.Separator({
+            orientation: Gtk.Orientation.HORIZONTAL,
             visible: true,
         }), 0, line, 4, 1);
 
@@ -440,7 +443,8 @@ function buildPrefsWidget() {
 
     // SEPARATOR
 
-    prefWidget.attach(new Gtk.HSeparator({
+    prefWidget.attach(new Gtk.Separator({
+        orientation: Gtk.Orientation.HORIZONTAL,
         visible: true,
     }), 0, line, 4, 1);
 
