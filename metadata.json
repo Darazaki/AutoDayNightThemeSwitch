@@ -5,6 +5,8 @@
   "url": "https://github.com/Darazaki/AutoDayNightThemeSwitch",
   "version": 3,
   "shell-version": [
+    "40.0",
+    "3.38",
     "3.36",
     "3.34",
     "3.32",

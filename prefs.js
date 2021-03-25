@@ -168,7 +168,8 @@ function buildDefaultGrid() {
         column_spacing: 12,
         row_spacing: 12,
         visible: true,
-        expand: true,
+        hexpand: true,
+        vexpand: true,
     });
 }
 
@@ -226,7 +227,8 @@ function buildTimePage(settings) {
 
     // SEPARATOR
 
-    prefWidget.attach(new Gtk.HSeparator({
+    prefWidget.attach(new Gtk.Separator({
+        orientation: Gtk.Orientation.HORIZONTAL,
         visible: true,
     }), 0, line, 4, 1);
 
@@ -333,7 +335,8 @@ function buildThemesPage(settings) {
 
         // SEPARATOR
 
-        prefWidget.attach(new Gtk.HSeparator({
+        prefWidget.attach(new Gtk.Separator({
+            orientation: Gtk.Orientation.HORIZONTAL,
             visible: true,
         }), 0, line, 4, 1);
 
